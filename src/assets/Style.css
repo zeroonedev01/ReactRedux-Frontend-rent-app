@@ -1,0 +1,13 @@
+.imageBook {
+  position: absolute;
+  top: -160px;
+  width: 20%;
+  border-radius: 10px;
+  box-shadow: 0px 0px 4px black;
+  right: -250px;
+}
+.content {
+  padding: 2px;
+  width: 60%;
+  position: relative;
+}

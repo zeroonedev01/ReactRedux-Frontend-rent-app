@@ -11,12 +11,11 @@ import Typography from "@material-ui/core/Typography"
 import Divider from "@material-ui/core/Divider"
 import Container from "@material-ui/core/Container"
 import Chip from "@material-ui/core/Chip"
-import Axios from "axios"
 import { Link } from "react-router-dom"
 import Edit from "../components/dialogs/Edit"
 import swal from "sweetalert"
-const API_URL = "http://localhost:3020/rentapp"
-
+import { getBookById, deleteBook } from "../Publics/actions/book"
+import { connect } from "react-redux"
 const styles = {
   mainFeaturedPost: {
     position: "relative",
@@ -26,7 +25,7 @@ const styles = {
     backgroundSize: "cover",
     backgroundRepeat: "no-repeat",
     backgroundPosition: "center",
-    // backgroundImage: `url(${getAPI.Image})`,
+    // backgroundImage: `url(${books.Image})`,
 
     height: "340px"
   },
@@ -90,11 +89,15 @@ const styles = {
 }
 
 class Detail extends Component {
-  state = {
-    getAPI: []
+  constructor(props) {
+    super(props)
+    this.state = {
+      books: []
+    }
   }
-  handleDelete = e => {
-    e.preventDefault()
+
+  handleDelete = () => {
+    const bookid = this.props.match.params.idBook
     swal({
       title: "Are you sure?",
       text: "You want to delete this Book?",
@@ -103,41 +106,47 @@ class Detail extends Component {
     })
       .then(willDelete => {
         if (willDelete) {
-          Axios.delete(
-            `http://localhost:3020/rentapp/books/${this.props.match.params.idBook}`
-          ).then(res => {
+          this.props.dispatch(deleteBook(bookid, "")).then(res => {
+            this.props.history.push("/")
             swal({
               title: "Done!",
               text: "Book is deleted",
               icon: "success",
               timer: 2000,
               button: false
-            }).then(function() {
-              window.location.href = "http://localhost:3006/"
             })
           })
         }
       })
       .catch(err => console.log("error =", err))
   }
-  componentDidMount = () => {
+  componentDidMount = async () => {
     const bookid = this.props.match.params.idBook
-    const url = `${API_URL}/books/${bookid}`
-    console.log(url)
-    Axios.get(url)
-      .then(res => {
-        this.setState({ getAPI: res.data.values })
-        console.log("getAPI =", this.state.getAPI)
-        console.log("sdsdsd", this.state.getAPI[0])
-      })
-      .catch(err => console.log("error =", err))
+    await this.props.dispatch(getBookById(bookid))
+    const cleanData = this.cleanData(this.props.book)
+    console.log("Detail CleanData", cleanData)
+    this.setState({ books: cleanData })
+    console.log("getBooksDetail =", this.state.books)
+  }
+  cleanData = res => {
+    const cleanData = res.bookList.map(book => {
+      book.DateReleased = new Date(book.DateReleased)
+        .toISOString()
+        .split("T")[0]
+      if (book.Image === null || book.Image === "") {
+        book.Image =
+          "https://icon-library.net/images/no-image-available-icon/no-image-available-icon-6.jpg"
+      }
+      return book
+    })
+    return cleanData
   }
   render() {
-    const { getAPI } = this.state
+    const { books } = this.state
     return (
       <React.Fragment>
         <CssBaseline />
-        {getAPI.map((card, index) => (
+        {books.map((card, index) => (
           <main style={styles.setCOlor}>
             <Paper
               style={{
@@ -165,11 +174,8 @@ class Detail extends Component {
                 <Grid item md={12}>
                   <div style={styles.mainFeaturedPostContent}>
                     <div style={styles.buttonRight}>
-                      <Edit bookInfo={getAPI[0]} />
-                      <Button
-                        color="inherit"
-                        onClick={this.handleDelete.bind(this)}
-                      >
+                      <Edit bookInfo={books[0]} />
+                      <Button color="inherit" onClick={this.handleDelete}>
                         Delete
                       </Button>
                     </div>
@@ -187,7 +193,7 @@ class Detail extends Component {
             <Container style={styles.cardGrid} maxWidth="lg">
               <div className="content">
                 <Chip label={card.genre} style={styles.setChip} />
-                {card.available == "true" ? (
+                {card.available === "true" ? (
                   <Chip label="Available" style={styles.setChip1} />
                 ) : (
                   <Chip label="Not Available" style={styles.setChip0} />
@@ -222,4 +228,10 @@ class Detail extends Component {
   }
 }
 
-export default Detail
+const mapStateToProps = state => {
+  return {
+    book: state.book
+  }
+}
+
+export default connect(mapStateToProps)(Detail)

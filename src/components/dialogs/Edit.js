@@ -6,20 +6,17 @@ import DialogActions from "@material-ui/core/DialogActions"
 import DialogContent from "@material-ui/core/DialogContent"
 import DialogContentText from "@material-ui/core/DialogContentText"
 import DialogTitle from "@material-ui/core/DialogTitle"
-import ListItem from "@material-ui/core/ListItem"
-import ListItemIcon from "@material-ui/core/ListItemIcon"
-import ListItemText from "@material-ui/core/ListItemText"
-import IAdd from "@material-ui/icons/AddBox"
 import MenuItem from "@material-ui/core/MenuItem"
 import Select from "@material-ui/core/Select"
 import InputLabel from "@material-ui/core/InputLabel"
 import Radio from "@material-ui/core/Radio"
 import RadioGroup from "@material-ui/core/RadioGroup"
-import FormHelperText from "@material-ui/core/FormHelperText"
 import FormControlLabel from "@material-ui/core/FormControlLabel"
 import FormControl from "@material-ui/core/FormControl"
 import Axios from "axios"
-
+import { getGenre } from "../../Publics/actions/genre"
+import { editBook } from "../../Publics/actions/book"
+import { connect } from "react-redux"
 import FormLabel from "@material-ui/core/FormLabel"
 import swal from "sweetalert"
 
@@ -28,31 +25,29 @@ class Edit extends Component {
     super(props)
     this.state = {
       open: false,
-      fields: this.props.bookInfo,
+      fields: {
+        id: this.props.bookInfo.id,
+        title: this.props.bookInfo.Title,
+        desc: this.props.bookInfo.Description,
+        image: this.props.bookInfo.Image,
+        available: this.props.bookInfo.statusid,
+        genre: this.props.bookInfo.genreid,
+        date: this.props.bookInfo.DateReleased
+      },
       getGen: []
     }
+    this.onInputChange = this.onInputChange.bind(this)
   }
 
   handleClickOpen = () => {
     this.setState({ open: !this.state.open })
   }
 
-  handleEdit = e => {
-    let data = {
-      title: this.state.fields.Title,
-      desc: this.state.fields.Description,
-      image: this.state.fields.Image,
-      available: this.state.fields.available,
-      genre: this.state.fields.genre,
-      date: this.state.fields.DateReleased
-    }
-    Axios.patch(
-      `http://localhost:3020/rentapp/books/${this.state.fields.id}`,
-      data
-    )
+  handleEdit = async e => {
+    await this.props
+      .dispatch(editBook(this.state.fields.id, this.state.fields, ""))
       .then(res => {
         console.log(res)
-        console.log(res.data)
         this.setState({
           open: false,
           fields: {
@@ -67,7 +62,7 @@ class Edit extends Component {
         })
         swal({
           title: "Done!",
-          text: "user Edited",
+          text: "Book Edited",
           icon: "success",
           timer: 2000,
           button: false
@@ -89,25 +84,19 @@ class Edit extends Component {
       }
     })
   }
-  componentDidMount = () => {
-    const url = `http://localhost:3020/rentapp/genres/`
-    Axios.get(url)
-      .then(res => {
-        this.setState({ getGen: res.data.values })
-        console.log("getGen =", this.state.getGen)
-      })
-      .catch(err => console.log("error =", err))
+  componentDidMount = async () => {
+    await this.props.dispatch(getGenre())
+    this.setState({ getGen: this.props.genre.genre })
+    console.log("getGen =", this.state.getGen)
   }
 
   render() {
-    // console.log(this.state.fields)
+    console.log(this.state.fields.available)
     const {
       open,
-      fields: { id, Title, Description, Image, available, genre, DateReleased },
+      fields: { title, desc, image, available, genre, date },
       getGen
     } = this.state
-    let avai = available === "true" ? 1 : 2
-
     return (
       <div>
         <Button color="inherit" onClick={this.handleClickOpen}>
@@ -137,9 +126,9 @@ class Edit extends Component {
                 margin="normal"
                 fullWidth
                 id="title"
-                label="Title"
-                name="Title"
-                value={Title}
+                label="title"
+                name="title"
+                value={title}
                 onChange={this.onInputChange.bind(this)}
               />
               <TextField
@@ -148,18 +137,18 @@ class Edit extends Component {
                 fullWidth
                 id="image"
                 label="image"
-                name="Image"
+                name="image"
                 onChange={this.onInputChange.bind(this)}
-                value={Image}
+                value={image}
               />
               <TextField
                 variant="outlined"
                 margin="normal"
                 fullWidth
-                name="DateReleased"
+                name="date"
                 label="date"
                 onChange={this.onInputChange.bind(this)}
-                value={DateReleased}
+                value={date}
                 id="date"
               />
               <FormControl
@@ -186,35 +175,35 @@ class Edit extends Component {
               </FormControl>
               <br />
               <FormControl component="fieldset">
-                <FormLabel component="legend">Gender</FormLabel>
+                <FormLabel component="legend">Available</FormLabel>
                 <RadioGroup
                   aria-label="available"
                   name="available"
-                  value={available}
-                  onChange={this.onInputChange.bind(this)}
+                  value={`${available}`}
+                  onChange={this.onInputChange}
                 >
                   <FormControlLabel
                     value="1"
                     control={<Radio />}
                     label="true"
-                    checked={avai === 1}
                   />
                   <FormControlLabel
                     value="2"
                     control={<Radio />}
-                    checked={avai === 2}
                     label="false"
                   />
                 </RadioGroup>
               </FormControl>
               <br />
               <TextField
+                fullWidth
+                variant="outlined"
                 id="desc"
                 label="Description"
                 multiline
                 rowsMax="4"
-                value={Description}
-                name="Description"
+                value={desc}
+                name="desc"
                 onChange={this.onInputChange.bind(this)}
                 margin="normal"
               />
@@ -234,4 +223,11 @@ class Edit extends Component {
   }
 }
 
-export default Edit
+const mapStateToProps = state => {
+  return {
+    genre: state.genre,
+    book: state.book
+  }
+}
+
+export default connect(mapStateToProps)(Edit)

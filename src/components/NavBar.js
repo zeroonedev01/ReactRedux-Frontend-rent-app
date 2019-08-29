@@ -329,7 +329,6 @@ export default function NavBar() {
               inputProps={{ "aria-label": "search" }}
             />
           </div>
-
           <div className={classes.sectionDesktop}>
             <form className={classes.root} autoComplete="off">
               <FormControl className={classes.formControl}>

@@ -24,6 +24,13 @@ import Grid from "@material-ui/core/Grid"
 import SearchIcon from "@material-ui/icons/Search"
 import InputBase from "@material-ui/core/InputBase"
 import logo from "../assets/bookshelf.svg"
+import FormControl from "@material-ui/core/FormControl"
+import InputLabel from "@material-ui/core/InputLabel"
+import MenuItem from "@material-ui/core/MenuItem"
+import Select from "@material-ui/core/Select"
+import SortByAlpha from "@material-ui/icons/SortByAlpha"
+import { Link } from "react-router-dom"
+
 // import Menu from "@material-ui/core/Menu"
 // import MenuItem from "@material-ui/core/MenuItem"
 // import MoreIcon from "@material-ui/icons/MoreVert"
@@ -32,9 +39,9 @@ import logo from "../assets/bookshelf.svg"
 // import FormControl from "@material-ui/core/FormControl"
 // import Select from "@material-ui/core/Select"
 // import SortByAlpha from "@material-ui/icons/SortByAlpha"
+import { getGenre } from "../Publics/actions/genre"
+import { connect } from "react-redux"
 import AddDialog from "./dialogs/Add"
-import Axios from "axios"
-const API_URL = "http://localhost:3020/rentapp"
 const drawerWidth = 240
 
 const styles = theme => ({
@@ -181,30 +188,27 @@ class PersistentDrawer extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      books: [],
-      searchField: "",
-      sort: "",
       open: false,
-      anchor: "left"
+      anchor: "left",
+      selectOptions: [
+        {
+          value: "Newest",
+          id: "Newest"
+        },
+        {
+          value: "Oldest",
+          id: "Oldest"
+        }
+      ],
+      getGen: []
     }
   }
-  searchBook = () => {
-    const url = `${API_URL}/books/`
-    Axios.get(url, {
-      params: {
-        search: this.state.searchField
-      }
-    })
-      .then(res => {
-        this.setState({ books: res.data.values })
-        console.log("getBooks =", this.state.books)
-      })
-      .catch(err => console.log("error =", err))
+  componentDidMount = async () => {
+    await this.props.dispatch(getGenre())
+    this.setState({ getGen: this.props.genre.genre })
+    console.log("getGen =", this.state.getGen)
   }
-  handleChange = e => {
-    console.log(e.target.value)
-    this.setState({ searchField: e.target.value })
-  }
+
   handleDrawerOpen = () => {
     this.setState({ open: true })
   }
@@ -218,8 +222,16 @@ class PersistentDrawer extends React.Component {
       anchor: event.target.value
     })
   }
+  renderSelectOptions = () => {
+    return this.state.selectOptions.map((dt, i) => (
+      <MenuItem key={dt.id} value={dt.id}>
+        {dt.value}
+      </MenuItem>
+    ))
+  }
 
   render() {
+    const { getGen } = this.state
     const { classes, theme } = this.props
     const { anchor, open } = this.state
 
@@ -245,7 +257,7 @@ class PersistentDrawer extends React.Component {
           </div>
           <Grid container justify="center" alignItems="center">
             <Avatar
-              alt="Remy Sharp"
+              alt="avatar"
               src="https://cdn3.iconfinder.com/data/icons/avatars-15/64/_Ninja-2-512.png"
               className={classes.bigAvatar}
             />
@@ -256,7 +268,7 @@ class PersistentDrawer extends React.Component {
         </div>
         <Divider />
         <List>
-          <ListItem button>
+          <ListItem button component={Link} to="/explore">
             <ListItemIcon>
               <IExplore />
             </ListItemIcon>
@@ -290,7 +302,10 @@ class PersistentDrawer extends React.Component {
             >
               <MenuIcon />
             </IconButton>
-            <img src={logo} alt="logo" />
+
+            <Link to="/">
+              <img src={logo} alt="logo" />
+            </Link>
 
             <Typography className={classes.title} variant="h4" noWrap>
               Rent Book
@@ -302,14 +317,49 @@ class PersistentDrawer extends React.Component {
               </div>
               <InputBase
                 placeholder="Search…"
-                onChange={this.handleChange}
-                onKeyPress={this.searchBook}
+                onChange={this.props.handleChange}
+                onKeyPress={this.props.searchBook}
                 classes={{
                   root: classes.inputRoot,
                   input: classes.inputInput
                 }}
                 inputProps={{ "aria-label": "search" }}
               />
+            </div>
+            <div className={classes.sectionDesktop}>
+              <form className={classes.root} autoComplete="off">
+                <FormControl className={classes.formControl}>
+                  <InputLabel htmlFor="genre">genre</InputLabel>
+                  <Select
+                    value={this.props.filter}
+                    name="genre"
+                    onChange={this.props.handleFilter}
+                  >
+                    <MenuItem value="">
+                      <em>All</em>
+                    </MenuItem>
+                    {getGen.map((genre1, index) => (
+                      <MenuItem value={genre1.name} key={index}>
+                        {genre1.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </form>
+              <form className={classes.root} autoComplete="off">
+                <FormControl className={classes.formControl}>
+                  <InputLabel htmlFor="alltime">AllTime</InputLabel>
+                  <Select
+                    value={this.props.sort}
+                    onChange={this.props.handleSort}
+                  >
+                    {this.renderSelectOptions()}
+                  </Select>
+                </FormControl>
+              </form>
+              <IconButton>
+                <SortByAlpha />
+              </IconButton>
             </div>
           </Toolbar>
         </AppBar>
@@ -323,5 +373,11 @@ PersistentDrawer.propTypes = {
   classes: PropTypes.object.isRequired,
   theme: PropTypes.object.isRequired
 }
-
-export default withStyles(styles, { withTheme: true })(PersistentDrawer)
+const mapStateToProps = state => {
+  return {
+    genre: state.genre
+  }
+}
+export default connect(mapStateToProps)(
+  withStyles(styles, { withTheme: true })(PersistentDrawer)
+)

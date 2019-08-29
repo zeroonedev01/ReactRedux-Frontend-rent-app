@@ -6,8 +6,6 @@ import Books from "../components/bookcard/BookCard"
 import { Card } from "@material-ui/core"
 import { Redirect } from "react-router-dom"
 
-import jwt from "../helpers/jwt"
-
 const theme = createMuiTheme({
   palette: {
     primary: {
@@ -23,13 +21,6 @@ class Home extends Component {
   state = {
     currentUser: ""
   }
-  // componentWillMount() {
-  //   const User = JSON.parse(jwt.getCurrentUser())
-  //   console.log(User)
-  //   if (User === "") {
-  //     return <Redirect to="/Login" />
-  //   }
-  // }
   render() {
     return (
       <MuiThemeProvider theme={theme}>

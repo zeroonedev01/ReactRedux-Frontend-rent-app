@@ -13,14 +13,11 @@ import IAdd from "@material-ui/icons/AddBox"
 import MenuItem from "@material-ui/core/MenuItem"
 import Select from "@material-ui/core/Select"
 import InputLabel from "@material-ui/core/InputLabel"
-import Radio from "@material-ui/core/Radio"
-import RadioGroup from "@material-ui/core/RadioGroup"
-import FormHelperText from "@material-ui/core/FormHelperText"
-import FormControlLabel from "@material-ui/core/FormControlLabel"
 import FormControl from "@material-ui/core/FormControl"
-import Axios from "axios"
 import swal from "sweetalert"
-import FormLabel from "@material-ui/core/FormLabel"
+import { getGenre } from "../../Publics/actions/genre"
+import { addBook, getBook } from "../../Publics/actions/book"
+import { connect } from "react-redux"
 
 class Add extends Component {
   state = {
@@ -30,7 +27,7 @@ class Add extends Component {
       title: "",
       desc: "",
       image: "",
-      available: "",
+      available: 1,
       genre: "",
       date: ""
     },
@@ -39,39 +36,52 @@ class Add extends Component {
   handleClickOpen = () => {
     this.setState({ open: !this.state.open })
   }
-  handleSubmit = e => {
-    e.preventDefault()
-    // let config = {
-    //   headers: { Authorization: "bearer " + token }
-    // }
-    Axios.post("http://localhost:3020/rentapp/books", this.state.fields)
+  handleSubmit = async () => {
+    //token
+    //insert
+    await this.props
+      .dispatch(addBook(this.state.fields, ""))
       .then(res => {
-        console.log(res)
-        console.log(res.data)
-        this.setState({
-          open: false,
-          fields: {
-            id: "",
-            title: "",
-            desc: "",
-            image: "",
-            available: "",
-            genre: "",
-            date: ""
-          }
-        })
-        swal({
-          title: "Done!",
-          text: "user is added to database",
-          icon: "success",
-          timer: 2000,
-          button: false
-        }).then(function() {
-          window.location.reload()
-        })
+        console.log("add Book", res.action.payload.data.status)
+        if (res.action.payload.data.status === 409) {
+          swal({
+            title: "Warning!",
+            text: `${res.action.payload.data.message}`,
+            icon: "warning",
+            timer: 2000,
+            button: false
+          })
+        } else {
+          this.setState({
+            open: false,
+            fields: {
+              id: "",
+              title: "",
+              desc: "",
+              image: "",
+              available: "",
+              genre: "",
+              date: ""
+            }
+          })
+          swal({
+            title: "Done!",
+            text: "Book is added to database",
+            icon: "success",
+            timer: 2000,
+            button: false
+          }).then(function() {
+            window.location.reload()
+          })
+        }
       })
       .catch(err => {
-        console.log(err)
+        swal({
+          title: "Failed!",
+          text: "Add Book Failed!" + err,
+          icon: "warning",
+          buttons: "oke"
+        })
       })
   }
   onInputChange(e) {
@@ -82,20 +92,16 @@ class Add extends Component {
       }
     })
   }
-  componentDidMount = () => {
-    const url = `http://localhost:3020/rentapp/genres/`
-    Axios.get(url)
-      .then(res => {
-        this.setState({ getGen: res.data.values })
-        console.log("getGen =", this.state.getGen)
-      })
-      .catch(err => console.log("error =", err))
+  componentDidMount = async () => {
+    await this.props.dispatch(getGenre())
+    this.setState({ getGen: this.props.genre.genre })
+    console.log("getGen =", this.state.getGen)
   }
 
   render() {
     const {
       open,
-      fields: { id, title, desc, image, available, genre, date },
+      fields: { id, title, desc, image, genre, date },
       getGen
     } = this.state
 
@@ -180,8 +186,8 @@ class Add extends Component {
                 </Select>
               </FormControl>
               <br />
-              <FormControl component="fieldset">
-                <FormLabel component="legend">Gender</FormLabel>
+              {/* <FormControl component="fieldset">
+                <FormLabel component="legend">Genre</FormLabel>
                 <RadioGroup
                   aria-label="available"
                   name="available"
@@ -200,8 +206,10 @@ class Add extends Component {
                   />
                 </RadioGroup>
               </FormControl>
-              <br />
+              <br /> */}
               <TextField
+                variant="outlined"
+                fullWidth
                 id="desc"
                 label="Description"
                 multiline
@@ -217,7 +225,7 @@ class Add extends Component {
             <Button onClick={this.handleClickOpen} color="secondary">
               Cancel
             </Button>
-            <Button onClick={this.handleSubmit.bind(this)} color="secondary">
+            <Button onClick={this.handleSubmit} color="secondary">
               Add
             </Button>
           </DialogActions>
@@ -227,4 +235,11 @@ class Add extends Component {
   }
 }
 
-export default Add
+const mapStateToProps = state => {
+  return {
+    genre: state.genre,
+    book: state.book
+  }
+}
+
+export default connect(mapStateToProps)(Add)

@@ -69,8 +69,12 @@ const styles = {
 }
 
 class Register extends React.Component {
-  state = {
-    fields: { username: "", email: "", password: "", role_id: 2 }
+  constructor(props) {
+    super(props)
+    this.state = {
+      fields: { username: "", email: "", password: "", role_id: 2 }
+    }
+    this.onInputChange = this.onInputChange.bind(this)
   }
 
   onInputChange(e) {
@@ -84,19 +88,20 @@ class Register extends React.Component {
 
   onFormSubmit(e) {
     e.preventDefault()
-    jwt
-      .signUp(this.state.fields)
-      .then(res => {
-        this.setState({ fields: { username: "", email: "", password: "" } })
-        if (res) {
-          console.log("dsdsd")
-        }
-      })
-      .then(res => {})
-      .catch(err => {
-        console.error(err)
-        alert("Fail! Sign UP")
-      })
+    console.log(this.state.fields)
+    // jwt
+    //   .signUp(this.state.fields)
+    //   .then(res => {
+    //     this.setState({ fields: { username: "", email: "", password: "" } })
+    //     if (res) {
+    //       console.log("dsdsd")
+    //     }
+    //   })
+    //   .then(res => {})
+    //   .catch(err => {
+    //     console.error(err)
+    //     alert("Fail! Sign UP")
+    //   })
   }
 
   render() {
@@ -132,7 +137,7 @@ class Register extends React.Component {
                 label="Username"
                 name="username"
                 value={username}
-                onChange={this.onInputChange.bind(this)}
+                onChange={this.onInputChange}
                 autoComplete="username"
                 autoFocus
               />
@@ -144,7 +149,7 @@ class Register extends React.Component {
                 id="email"
                 label="Email"
                 name="email"
-                onChange={this.onInputChange.bind(this)}
+                onChange={this.onInputChange}
                 value={email}
                 autoComplete="email"
               />
@@ -155,7 +160,7 @@ class Register extends React.Component {
                 fullWidth
                 name="password"
                 label="Password"
-                onChange={this.onInputChange.bind(this)}
+                onChange={this.onInputChange}
                 value={password}
                 type="password"
                 id="password"
@@ -165,7 +170,7 @@ class Register extends React.Component {
                 fullWidth
                 variant="contained"
                 color="primary"
-                onClick={this.onFormSubmit.bind(this)}
+                onClick={this.onFormSubmit}
                 style={styles.submit}
               >
                 Register

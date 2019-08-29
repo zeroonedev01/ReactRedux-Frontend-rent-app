@@ -6,7 +6,18 @@ import Slider from "react-slick"
 import "slick-carousel/slick/slick.css"
 import "slick-carousel/slick/slick-theme.css"
 import Axios from "axios"
+import Typography from "@material-ui/core/Typography"
+
 const API_URL = "http://localhost:3020/rentapp"
+// const Carousel = props => {
+//   return (
+//     <div>
+//       {props.carousel.map((book, i) => {
+//         return <Typography>{book.Title}</Typography>
+//       })}
+//     </div>
+//   )
+// }
 
 class Carousel extends Component {
   state = {
@@ -48,16 +59,16 @@ class Carousel extends Component {
       { color: "#27ae60" },
       { color: "#16a085" }
     ]
-    console.log(this.state.getCarousel[0])
+    // console.log(this.state.getCarousel[0])
     let carouselBooks = []
     // const textColor = "color: #FFFFFF;"
-    for (let i = 0; i < this.state.getCarousel.length; i++) {
+    for (let i = 0; i < this.props.carousel.length; i++) {
       const color = backgroundColors[i]
       const dark = darkColors[i]
       carouselBooks.push(
         <div key={i}>
           <BookCard
-            bookInfo={this.state.getCarousel[i]}
+            bookInfo={this.props.carousel[i]}
             style={color}
             dark={dark}
           />
@@ -80,8 +91,13 @@ class Carousel extends Component {
       autoplaySpeed: 2000,
       pauseOnHover: true
     }
+    // console.log(this.props.carousel.Title)
     return (
       <div className="Carousel">
+        {/* {this.props.carousel.map((book, i) => {
+          return <Typography>{book.Title}</Typography>
+        })} */}
+
         <Slider {...settings}>{this.getCategoryBook()}</Slider>
       </div>
     )

@@ -26,7 +26,6 @@ class Landing extends Component {
       searchField: "",
       sort: "",
       carousel: [],
-      filter: "",
       i: 0
     }
   }
@@ -54,10 +53,6 @@ class Landing extends Component {
     console.log(e.target.value)
     this.setState({ sort: e.target.value })
   }
-  handleFilter = e => {
-    console.log(e.target.value)
-    this.setState({ filter: e.target.value })
-  }
   handlePage = e => {
     this.setState({
       i: e
@@ -77,46 +72,17 @@ class Landing extends Component {
     return cleanData
   }
   render() {
-    console.log("Genre", this.state.filter)
     console.log("State", this.state)
-    let filterCarousel = this.state.carousel.filter(
-      function(item) {
-        if (this.count < 9 && item.available === "true") {
-          this.count++
-          return true
-        }
-        return false
-      },
-      { count: 0 }
-    )
-    let filteredBooks = this.state.books
-      .filter(bookFil => {
-        if (this.state.filter === "") {
-          return bookFil
-        }
-        return bookFil.genre === this.state.filter
-      })
-      .sort((a, b) => {
-        if (this.state.sort === "Newest") {
-          console.log("in newest")
-          return new Date(b.DateReleased) - new Date(a.DateReleased)
-        } else if (this.state.sort === "Oldest") {
-          return new Date(a.DateReleased) - new Date(b.DateReleased)
-        }
-
-        return true
-      })
-
-    // const filteredBooks = this.state.books.sort((a, b) => {
-    //   if (this.state.sort === "Newest") {
-    //     console.log("in newest")
-    //     return new Date(b.DateReleased) - new Date(a.DateReleased)
-    //   } else if (this.state.sort === "Oldest") {
-    //     return new Date(a.DateReleased) - new Date(b.DateReleased)
-    //   }
-
-    //   return true
-    // })
+    const filteredBooks = this.state.books.sort((a, b) => {
+      if (this.state.sort === "Newest") {
+        console.log("in newest")
+        return new Date(b.DateReleased) - new Date(a.DateReleased)
+      } else if (this.state.sort === "Oldest") {
+        return new Date(a.DateReleased) - new Date(b.DateReleased)
+      }
+      // console.log("sdssdsd", this.state.books)
+      return true
+    })
     return (
       <MuiThemeProvider theme={theme}>
         {
@@ -125,13 +91,10 @@ class Landing extends Component {
             handleChange={this.handleChange1}
             handleSort={this.handleSort}
             sort={this.state.sort}
-            handleFilter={this.handleFilter}
-            filter={this.state.filter}
           />
         }
         {this.state.books ? (
           <>
-            <Carausel carousel={filterCarousel} />
             <Books
               books={filteredBooks}
               i={this.state.i}

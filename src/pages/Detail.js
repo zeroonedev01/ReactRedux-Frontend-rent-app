@@ -1,4 +1,4 @@
-import React from "react"
+import React, { Component } from "react"
 import { makeStyles } from "@material-ui/core/styles"
 import CssBaseline from "@material-ui/core/CssBaseline"
 import Paper from "@material-ui/core/Paper"
@@ -11,18 +11,23 @@ import Typography from "@material-ui/core/Typography"
 import Divider from "@material-ui/core/Divider"
 import Container from "@material-ui/core/Container"
 import Chip from "@material-ui/core/Chip"
+import Axios from "axios"
+import { Link } from "react-router-dom"
+import Edit from "../components/dialogs/Edit"
+import swal from "sweetalert"
+const API_URL = "http://localhost:3020/rentapp"
 
-const useStyles = makeStyles(theme => ({
+const styles = {
   mainFeaturedPost: {
     position: "relative",
-    backgroundColor: theme.palette.grey[800],
-    color: theme.palette.common.white,
-    marginBottom: theme.spacing(4),
-    backgroundImage:
-      "url(http://smpn1mojoagung.sch.id/wp-content/uploads/2016/09/Ayatayatcinta-ok.jpg)",
+    backgroundColor: "#424242",
+    color: "white",
+    marginBottom: "32px",
     backgroundSize: "cover",
     backgroundRepeat: "no-repeat",
     backgroundPosition: "center",
+    // backgroundImage: `url(${getAPI.Image})`,
+
     height: "340px"
   },
   overlay: {
@@ -39,138 +44,182 @@ const useStyles = makeStyles(theme => ({
     color: "white"
   },
   setChip1: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
+    marginLeft: "8px",
+    marginRight: "8px",
     background: "linear-gradient(45deg, #43e97b 30%, #38f914 70%)",
     width: 120,
     color: "white"
   },
+  setChip0: {
+    marginLeft: "8px",
+    marginRight: "8px",
+    background: "linear-gradient(to right, #616161, #9bc5c3)",
+    width: 120,
+    color: "white"
+  },
   setButton: {
-    marginTop: theme.spacing(1),
+    marginTop: "50px",
     background: "linear-gradient(to top, #00b4db, #0083b0)",
     color: "white"
   },
   mainFeaturedPostContent: {
     position: "relative",
-    padding: theme.spacing(3),
-    [theme.breakpoints.up("md")]: {
-      padding: theme.spacing(6),
-      paddingRight: 0
-    }
+    padding: "24px"
+    // "@media screen and (min-width: 48em)": {
+    //   padding: "48px",
+    //   paddingRight: 0
+    // }
   },
   mainGrid: {
-    marginTop: theme.spacing(1)
+    marginTop: "8px"
   },
   sidebarAboutBox: {
-    padding: theme.spacing(2),
-    backgroundColor: theme.palette.grey[200]
+    padding: "16px",
+    backgroundColor: "#eeeeee"
   },
   sidebarSection: {
-    marginTop: theme.spacing(3)
+    marginTop: "24px"
   },
   buttonRight: {
     float: "right",
-    marginRight: theme.spacing(5)
+    marginRight: "40px"
   },
   setCOlor: {
     backgroundColor: "white"
   }
-}))
-
-export default function DetailBook() {
-  const classes = useStyles()
-  return (
-    <React.Fragment>
-      <CssBaseline />
-      <main className={classes.setCOlor}>
-        <Paper className={classes.mainFeaturedPost}>
-          <div className={classes.overlay} />
-          <Grid container>
-            <Grid item md={12}>
-              <div className={classes.mainFeaturedPostContent}>
-                <div className={classes.buttonRight}>
-                  <Button color="inherit">Edit</Button>
-                  <Button color="inherit">Delete</Button>
-                </div>
-                <Fab size="medium" color="secondary" aria-label="back">
-                  <ArrowBackIcon />
-                </Fab>
-              </div>
-            </Grid>
-          </Grid>
-        </Paper>
-        <Container className={classes.cardGrid} maxWidth="lg">
-          <div className="content">
-            <Chip label="Genre" className={classes.setChip} />
-            <Chip label="Available" className={classes.setChip1} />
-            <img
-              className={"imageBook"}
-              src={
-                "http://smpn1mojoagung.sch.id/wp-content/uploads/2016/09/Ayatayatcinta-ok.jpg"
-              }
-              alt="sdsds"
-            />
-          </div>
-          <Grid container spacing={5} className={classes.mainGrid}>
-            <Grid item xs={12} md={8}>
-              <Typography variant="h4" gutterBottom>
-                Judul Gan Judul sdsd sdsd sdsd sds sdsd
-              </Typography>
-              <Typography variant="h6" gutterBottom>
-                8 Agustus 2019
-              </Typography>
-              <Divider />
-              <Typography variant="subtitle1" gutterBottom align="justify">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin
-                ac diam eget est rutrum ultrices. Donec laoreet enim a massa
-                dapibus, cursus egestas dui pulvinar. Proin sit amet accumsan
-                lectus. Nullam auctor auctor consequat. Donec semper magna erat,
-                sed fringilla lacus pretium eget. Cras porttitor, nibh sit amet
-                interdum bibendum, nibh velit accumsan tellus, vel vehicula
-                tellus leo vitae ipsum. Praesent sit amet libero sed orci
-                ullamcorper efficitur. Pellentesque in euismod purus, sit amet
-                ultrices tortor. Vestibulum ante dui, tempor at dui id,
-                tincidunt euismod diam. Integer pellentesque massa nibh, ac
-                eleifend odio malesuada sed. Phasellus orci sem, cursus nec orci
-                ut, accumsan facilisis lacus. Nullam at elementum nibh, ac
-                gravida felis. In sagittis rhoncus nisi tempus dignissim. Sed
-                fringilla consequat ante vitae lobortis. Cras posuere ligula vel
-                enim suscipit malesuada. Vivamus non nulla ut ante imperdiet
-                euismod quis nec massa.
-              </Typography>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Button size="large" className={classes.setButton}>
-                Borrow
-              </Button>
-            </Grid>
-          </Grid>
-        </Container>
-      </main>
-    </React.Fragment>
-  )
 }
 
-// import React, { Component } from "react"
-// import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles"
-// // import Header from "../components/NavBar"
-// import Detail from "../components/DetailBook"
+class Detail extends Component {
+  state = {
+    getAPI: []
+  }
+  handleDelete = e => {
+    e.preventDefault()
+    swal({
+      title: "Are you sure?",
+      text: "You want to delete this Book?",
+      icon: "warning",
+      dangerMode: true
+    })
+      .then(willDelete => {
+        if (willDelete) {
+          Axios.delete(
+            `http://localhost:3020/rentapp/books/${this.props.match.params.idBook}`
+          ).then(res => {
+            swal({
+              title: "Done!",
+              text: "Book is deleted",
+              icon: "success",
+              timer: 2000,
+              button: false
+            }).then(function() {
+              window.location.href = "http://localhost:3006/"
+            })
+          })
+        }
+      })
+      .catch(err => console.log("error =", err))
+  }
+  componentDidMount = () => {
+    const bookid = this.props.match.params.idBook
+    const url = `${API_URL}/books/${bookid}`
+    console.log(url)
+    Axios.get(url)
+      .then(res => {
+        this.setState({ getAPI: res.data.values })
+        console.log("getAPI =", this.state.getAPI)
+        console.log("sdsdsd", this.state.getAPI[0])
+      })
+      .catch(err => console.log("error =", err))
+  }
+  render() {
+    const { getAPI } = this.state
+    return (
+      <React.Fragment>
+        <CssBaseline />
+        {getAPI.map((card, index) => (
+          <main style={styles.setCOlor}>
+            <Paper
+              style={{
+                position: "relative",
+                backgroundColor: "#424242",
+                color: "white",
+                marginBottom: "32px",
+                backgroundSize: "cover",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "center",
+                backgroundImage: `url(${card.Image})`,
+                height: "430px"
+              }}
+            >
+              {/* {
+              <img
+                style={{ display: "none" }}
+                src="https://source.unsplash.com/user/erondu"
+                alt="background"
+              />
+            } */}
 
-// const theme = createMuiTheme({
-//   palette: {
-//     primary: {
-//       main: "#FFFFFF"
-//     },
-//     secondary: {
-//       main: "#000000"
-//     }
-//   }
-// })
+              <div style={styles.overlay} />
+              <Grid container>
+                <Grid item md={12}>
+                  <div style={styles.mainFeaturedPostContent}>
+                    <div style={styles.buttonRight}>
+                      <Edit bookInfo={getAPI[0]} />
+                      <Button
+                        color="inherit"
+                        onClick={this.handleDelete.bind(this)}
+                      >
+                        Delete
+                      </Button>
+                    </div>
 
-// class Landing extends Component {
-//   render() {
-//     return <MuiThemeProvider theme={theme}>{<Detail />}</MuiThemeProvider>
-//   }
-// }
+                    <Link to="/" style={{ textDecoration: "none" }}>
+                      {" "}
+                      <Fab size="medium" color="secondary" aria-label="back">
+                        <ArrowBackIcon />
+                      </Fab>
+                    </Link>
+                  </div>
+                </Grid>
+              </Grid>
+            </Paper>
+            <Container style={styles.cardGrid} maxWidth="lg">
+              <div className="content">
+                <Chip label={card.genre} style={styles.setChip} />
+                {card.available == "true" ? (
+                  <Chip label="Available" style={styles.setChip1} />
+                ) : (
+                  <Chip label="Not Available" style={styles.setChip0} />
+                )}
 
-// export default Landing
+                <img className="imageBook" src={`${card.Image}`} alt="sdsds" />
+              </div>
+              <Grid container spacing={5} style={styles.mainGrid}>
+                <Grid item xs={12} md={8}>
+                  <Typography variant="h4" gutterBottom>
+                    {card.Title}
+                  </Typography>
+                  <Typography variant="h6" gutterBottom>
+                    {card.DateReleased}
+                  </Typography>
+                  <Divider />
+                  <Typography variant="subtitle1" gutterBottom align="justify">
+                    {card.Description}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <Button size="large" style={styles.setButton}>
+                    Borrow
+                  </Button>
+                </Grid>
+              </Grid>
+            </Container>
+          </main>
+        ))}
+      </React.Fragment>
+    )
+  }
+}
+
+export default Detail

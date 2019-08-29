@@ -5,7 +5,7 @@ class SeeBook extends Component {
   render() {
     return (
       <div className="SeeBook" style={this.props.color}>
-        <button style={this.props.color}>See Book</button>
+        <button style={this.props.color}>Detail</button>
       </div>
     )
   }

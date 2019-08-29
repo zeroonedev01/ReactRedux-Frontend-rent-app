@@ -1,9 +1,8 @@
 import React, { Component } from "react"
 import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles"
-import Header from "../components/common/Header"
+import Header from "../components/NavBar1"
 import Carausel from "../components/carousel/Carousel"
-import Books from "../components/BookCard"
-import Books1 from "../components/Card2"
+import Books from "../components/bookcard/BookCard"
 
 const theme = createMuiTheme({
   palette: {

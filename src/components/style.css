@@ -1,0 +1,16 @@
+.cardGrid {
+  padding-top: 100px;
+  padding-bottom: 100px;
+}
+.card {
+  height: "100%";
+  display: "flex";
+  flex-direction: "column";
+}
+.cardContent {
+  flex-grow: 1;
+  text-decoration: none;
+}
+.Space {
+  margin-top: 16px;
+}

@@ -17,7 +17,6 @@ import ListItemIcon from "@material-ui/core/ListItemIcon"
 import ListItemText from "@material-ui/core/ListItemText"
 import IExplore from "@material-ui/icons/Explore"
 import IHistory from "@material-ui/icons/History"
-import IAdd from "@material-ui/icons/AddBox"
 import Avatar from "@material-ui/core/Avatar"
 import Grid from "@material-ui/core/Grid"
 import SearchIcon from "@material-ui/icons/Search"
@@ -31,6 +30,7 @@ import InputLabel from "@material-ui/core/InputLabel"
 import FormControl from "@material-ui/core/FormControl"
 import Select from "@material-ui/core/Select"
 import SortByAlpha from "@material-ui/icons/SortByAlpha"
+import AddDialog from "./dialogs/Add"
 const drawerWidth = 240
 
 const useStyles = makeStyles(theme => ({
@@ -188,14 +188,7 @@ const History = (
     <ListItemText primary="History" />
   </ListItem>
 )
-const AddBook = (
-  <ListItem button>
-    <ListItemIcon>
-      <IAdd />
-    </ListItemIcon>
-    <ListItemText primary="Add Book" />
-  </ListItem>
-)
+const AddBook = <AddDialog />
 export default function NavBar() {
   const classes = useStyles()
   const theme = useTheme()
@@ -414,7 +407,7 @@ export default function NavBar() {
             />
           </Grid>
           <Typography gutterBottom variant="h5" component="h2" align="center">
-            Gampang Sekali!!!
+            Misekai
           </Typography>
         </div>
         <Divider />

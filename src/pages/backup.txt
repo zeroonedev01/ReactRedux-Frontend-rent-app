@@ -1,33 +1,34 @@
-import React from "react"
+import React, { Component } from "react"
 import Button from "@material-ui/core/Button"
 import CssBaseline from "@material-ui/core/CssBaseline"
 import TextField from "@material-ui/core/TextField"
+import FormControlLabel from "@material-ui/core/FormControlLabel"
+import Checkbox from "@material-ui/core/Checkbox"
 import Paper from "@material-ui/core/Paper"
 import Box from "@material-ui/core/Box"
 import Grid from "@material-ui/core/Grid"
-import { Link } from "react-router-dom"
+import { Link, Redirect } from "react-router-dom"
 import Typography from "@material-ui/core/Typography"
 import { makeStyles } from "@material-ui/core/styles"
 import Hidden from "@material-ui/core/Hidden"
 import logo from "../assets/bookshelf.svg"
-import jwt from "../helpers/jwt"
+import axios from "axios"
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}
-      <Link color="inherit" to="https://github.com/tejojr">
+      <Link color="inherit" href="https://github.com/tejojr">
         ZerefWeismann
       </Link>{" "}
       {new Date().getFullYear()}
       {". Built with "}
-      <Link color="inherit" to="https://material-ui.com/">
+      <Link color="inherit" href="https://material-ui.com/">
         Material-UI.
       </Link>
     </Typography>
   )
 }
-
 const styles = {
   root: {
     height: "100vh"
@@ -68,39 +69,39 @@ const styles = {
   }
 }
 
-class Register extends React.Component {
-  state = {
-    fields: { username: "", email: "", password: "", role_id: 2 }
+class Login extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      username: "",
+      password: ""
+    }
+    this.onChange = this.onChange.bind(this)
+    this.handleLogin = this.handleLogin.bind(this)
   }
-
-  onInputChange(e) {
+  onChange(e) {
     this.setState({
-      fields: {
-        ...this.state.fields,
-        [e.target.name]: e.target.value
-      }
+      [e.target.name]: e.target.value
     })
   }
-
-  onFormSubmit(e) {
+  handleLogin(e) {
     e.preventDefault()
-    jwt
-      .signUp(this.state.fields)
+    const { username, password } = this.state
+    axios
+      .post("http://localhost:3020/rentapp/users/signin", {
+        email: username,
+        password: password
+      })
       .then(res => {
-        this.setState({ fields: { username: "", email: "", password: "" } })
-        if (res) {
-          console.log("dsdsd")
-        }
+        localStorage.setItem(
+          "token",
+          JSON.stringify(res.data.values.accessToken)
+        )
+        this.props.history.push("/home")
       })
-      .then(res => {})
-      .catch(err => {
-        console.error(err)
-        alert("Fail! Sign UP")
-      })
+      .catch(err => console.log(err))
   }
-
   render() {
-    const { username, email, password } = this.state.fields
     return (
       <Grid container component="main" style={styles.root}>
         <CssBaseline />
@@ -117,10 +118,10 @@ class Register extends React.Component {
           </Link>
           <div style={styles.paper}>
             <Typography component="h3" variant="h3">
-              Register
+              Sign in
             </Typography>
             <Typography component="h1" variant="h6">
-              Welcome Back, Please Register to create account
+              Welcome Back, Please Login to your account
             </Typography>
             <form style={styles.form} noValidate>
               <TextField
@@ -128,25 +129,13 @@ class Register extends React.Component {
                 margin="normal"
                 required
                 fullWidth
-                id="username"
-                label="Username"
-                name="username"
-                value={username}
-                onChange={this.onInputChange.bind(this)}
-                autoComplete="username"
-                autoFocus
-              />
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
                 id="email"
-                label="Email"
-                name="email"
-                onChange={this.onInputChange.bind(this)}
-                value={email}
+                label="Email Address or Username"
+                name="username"
                 autoComplete="email"
+                onChange={this.onChange}
+                value={this.state.username}
+                autoFocus
               />
               <TextField
                 variant="outlined"
@@ -155,25 +144,35 @@ class Register extends React.Component {
                 fullWidth
                 name="password"
                 label="Password"
-                onChange={this.onInputChange.bind(this)}
-                value={password}
                 type="password"
                 id="password"
+                autoComplete="current-password"
+                onChange={this.onChange}
+                value={this.state.password}
+              />
+              <FormControlLabel
+                control={<Checkbox value="remember" color="primary" />}
+                label="Remember me"
               />
               <Button
                 type="submit"
+                onClick={this.handleLogin}
                 fullWidth
                 variant="contained"
                 color="primary"
-                onClick={this.onFormSubmit.bind(this)}
                 style={styles.submit}
               >
-                Register
+                Sign In
               </Button>
               <Grid container>
+                <Grid item xs>
+                  <Link to="/register" variant="body2" style={styles.setLink}>
+                    Forgot Password?
+                  </Link>
+                </Grid>
                 <Grid item>
-                  <Link to="/login" variant="body2" style={styles.setLink}>
-                    {"Already have an account? Sign in"}
+                  <Link to="/register" variant="body2" style={styles.setLink}>
+                    {"Don't have an account? Sign Up"}
                   </Link>
                 </Grid>
               </Grid>
@@ -187,5 +186,4 @@ class Register extends React.Component {
     )
   }
 }
-
-export default Register
+export default Login

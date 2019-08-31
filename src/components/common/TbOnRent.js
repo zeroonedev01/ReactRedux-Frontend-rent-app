@@ -22,7 +22,6 @@ class History extends React.Component {
       "Title",
       "Borrow Date",
       "Expired Date",
-      "Returned Date",
       "View"
     ]
     // const data = Array.from(this.props.data)
@@ -35,9 +34,6 @@ class History extends React.Component {
           item.title,
           (item.daterent = new Date(item.daterent).toISOString().split("T")[0]),
           (item.datereturn = new Date(item.datereturn)
-            .toISOString()
-            .split("T")[0]),
-          (item.datereturnuser = new Date(item.daterent)
             .toISOString()
             .split("T")[0]),
           <Button

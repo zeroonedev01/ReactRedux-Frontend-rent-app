@@ -272,6 +272,14 @@ class Detail extends Component {
   }
   render() {
     console.log("user sekarang", this.state.curentUser)
+    let borrowing = null
+    if (this.props.borrow.borrowStat) {
+      borrowing = this.props.borrow.borrowStat.filter(
+        s => s.datereturnuser === null
+      )
+    }
+    // console.log("akuuuu", borrowing[0])
+
     const { books } = this.state
     return (
       <React.Fragment>
@@ -358,11 +366,11 @@ class Detail extends Component {
                         </Typography>
                       ) : (
                         <Typography variant="h6" component="h3">
-                          Borrowed by {this.props.borrow.borrowStat[0].username}
+                          Borrowed by {borrowing[0].username}
                           <br></br>
                           Estimated Book Returned{" "}
                           {
-                            new Date(this.props.borrow.borrowStat[0].datereturn)
+                            new Date(borrowing[0].datereturn)
                               .toISOString()
                               .split("T")[0]
                           }
@@ -376,22 +384,31 @@ class Detail extends Component {
                       >
                         Borrow
                       </Button>
-                    ) : this.props.borrow.borrowStat[0].userid ===
-                      this.state.curentUser.id ? (
-                      <Button
-                        size="large"
-                        style={styles.setButton}
-                        onClick={this.handleRent}
-                      >
-                        Return
-                      </Button>
+                    ) : borrowing[0].userid === this.state.curentUser.id ? (
+                      <>
+                        <Button
+                          size="large"
+                          style={styles.setButton}
+                          onClick={this.handleRent}
+                        >
+                          Return
+                        </Button>
+                        <Typography color="error">
+                          Dont Forget to Return the Book before{" "}
+                          {
+                            new Date(borrowing[0].datereturn)
+                              .toISOString()
+                              .split("T")[0]
+                          }
+                        </Typography>
+                      </>
                     ) : (
                       <Typography color="error">
-                        Borrowed by {this.props.borrow.borrowStat[0].username}
+                        Borrowed by {borrowing[0].username}
                         <br></br>
                         Estimated Book Returned{" "}
                         {
-                          new Date(this.props.borrow.borrowStat[0].datereturn)
+                          new Date(borrowing[0].datereturn)
                             .toISOString()
                             .split("T")[0]
                         }

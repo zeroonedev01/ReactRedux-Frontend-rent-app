@@ -33,7 +33,7 @@ class History extends React.Component {
           (item.datereturn = new Date(item.datereturn)
             .toISOString()
             .split("T")[0]),
-          (item.datereturnuser = new Date(item.daterent)
+          (item.datereturnuser = new Date(item.datereturnuser)
             .toISOString()
             .split("T")[0])
         ]

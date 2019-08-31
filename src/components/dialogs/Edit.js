@@ -13,7 +13,8 @@ import Radio from "@material-ui/core/Radio"
 import RadioGroup from "@material-ui/core/RadioGroup"
 import FormControlLabel from "@material-ui/core/FormControlLabel"
 import FormControl from "@material-ui/core/FormControl"
-import Axios from "axios"
+import check from "../../helpers/jwt"
+
 import { getGenre } from "../../Publics/actions/genre"
 import { editBook } from "../../Publics/actions/book"
 import { connect } from "react-redux"
@@ -44,8 +45,9 @@ class Edit extends Component {
   }
 
   handleEdit = async e => {
+    const token = JSON.parse(check.getToken())
     await this.props
-      .dispatch(editBook(this.state.fields.id, this.state.fields, ""))
+      .dispatch(editBook(this.state.fields.id, this.state.fields, token))
       .then(res => {
         console.log(res)
         this.setState({

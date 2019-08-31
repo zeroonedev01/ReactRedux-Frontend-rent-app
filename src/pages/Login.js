@@ -9,22 +9,24 @@ import Box from "@material-ui/core/Box"
 import Grid from "@material-ui/core/Grid"
 import { Link, Redirect } from "react-router-dom"
 import Typography from "@material-ui/core/Typography"
-import { makeStyles } from "@material-ui/core/styles"
+import { login } from "../Publics/actions/auth"
 import Hidden from "@material-ui/core/Hidden"
 import logo from "../assets/bookshelf.svg"
 import jwt from "../helpers/jwt"
-import axios from "axios"
+import check from "../helpers/jwt"
+import swal from "sweetalert"
+import { connect } from "react-redux"
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}
-      <Link color="inherit" href="https://github.com/tejojr">
+      <Link color="inherit" to="https://github.com/tejojr">
         ZerefWeismann
       </Link>{" "}
       {new Date().getFullYear()}
       {". Built with "}
-      <Link color="inherit" href="https://material-ui.com/">
+      <Link color="inherit" to="https://material-ui.com/">
         Material-UI.
       </Link>
     </Typography>
@@ -71,12 +73,16 @@ const styles = {
 }
 
 class Login extends Component {
-  state = {
-    fields: { email: "", password: "" },
-    toHome: false
+  constructor() {
+    super()
+    this.state = {
+      curentUser: check.getCurrentUser(),
+      fields: {
+        email: "",
+        password: ""
+      }
+    }
   }
-  // onChange = this.onChange.bind(this)
-  // handleLogin = this.handleLogin.bind(this)
 
   onChange(e) {
     this.setState({
@@ -86,18 +92,61 @@ class Login extends Component {
       }
     })
   }
-  handleLogin(e) {
+  handleLogin = async e => {
     e.preventDefault()
-    jwt.logIn(this.state.fields).then(user => {
-      this.setState({ fields: { email: "", password: "" } })
-      if (user) {
-        this.setState({ toHome: true })
-      }
-    })
+    await this.props
+      .dispatch(login(this.state.fields))
+      .then(res => {
+        if (res.action.payload.data.status === 403) {
+          swal({
+            title: "Warning!",
+            text: `${res.action.payload.data.message}`,
+            icon: "warning",
+            timer: 2000,
+            button: false
+          })
+        } else if (res.action.payload.data.status === 404) {
+          swal({
+            title: "Warning!",
+            text: `${res.action.payload.data.message}`,
+            icon: "warning",
+            timer: 2000,
+            button: false
+          })
+        } else {
+          const token = JSON.stringify(
+            res.action.payload.data.values.accessToken
+          )
+          if (token) {
+            jwt.setToken(token)
+            swal({
+              title: "Done!",
+              text: "Login Success",
+              icon: "success",
+              timer: 2000,
+              button: false
+            })
+            this.props.history.push("/")
+          } else {
+            swal({
+              title: "Warning!",
+              text: `Failed Authentication`,
+              icon: "warning",
+              timer: 2000,
+              button: false
+            })
+          }
+        }
+      })
+      .catch(err => {
+        console.error(err)
+        alert("Failed")
+      })
   }
   render() {
-    if (this.state.toHome === true) {
-      return <Redirect to="/" />
+    console.log(this.state.curentUser)
+    if (this.state.curentUser) {
+      this.props.history.push("/")
     }
     const { email, password } = this.state.fields
     return (
@@ -184,4 +233,10 @@ class Login extends Component {
     )
   }
 }
-export default Login
+const mapStateToProps = state => {
+  return {
+    auth: state.auth
+  }
+}
+
+export default connect(mapStateToProps)(Login)

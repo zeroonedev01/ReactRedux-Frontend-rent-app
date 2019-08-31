@@ -18,7 +18,7 @@ import swal from "sweetalert"
 import { getGenre } from "../../Publics/actions/genre"
 import { addBook, getBook } from "../../Publics/actions/book"
 import { connect } from "react-redux"
-
+import check from "../../helpers/jwt"
 class Add extends Component {
   state = {
     open: false,
@@ -37,16 +37,31 @@ class Add extends Component {
     this.setState({ open: !this.state.open })
   }
   handleSubmit = async () => {
-    //token
-    //insert
+    const token = JSON.parse(check.getToken())
     await this.props
-      .dispatch(addBook(this.state.fields, ""))
+      .dispatch(addBook(this.state.fields, token))
       .then(res => {
         console.log("add Book", res.action.payload.data.status)
         if (res.action.payload.data.status === 409) {
           swal({
             title: "Warning!",
             text: `${res.action.payload.data.message}`,
+            icon: "warning",
+            timer: 2000,
+            button: false
+          })
+        } else if (res.action.payload.data.status === 403) {
+          swal({
+            title: "Warning!",
+            text: `No token provided`,
+            icon: "warning",
+            timer: 2000,
+            button: false
+          })
+        } else if (res.action.payload.data.status === 500) {
+          swal({
+            title: "Warning!",
+            text: `Fail to Authentication. Error`,
             icon: "warning",
             timer: 2000,
             button: false

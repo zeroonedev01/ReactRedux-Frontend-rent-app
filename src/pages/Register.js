@@ -7,10 +7,13 @@ import Box from "@material-ui/core/Box"
 import Grid from "@material-ui/core/Grid"
 import { Link } from "react-router-dom"
 import Typography from "@material-ui/core/Typography"
-import { makeStyles } from "@material-ui/core/styles"
 import Hidden from "@material-ui/core/Hidden"
 import logo from "../assets/bookshelf.svg"
 import jwt from "../helpers/jwt"
+import check from "../helpers/jwt"
+import swal from "sweetalert"
+import { register } from "../Publics/actions/auth"
+import { connect } from "react-redux"
 
 function Copyright() {
   return (
@@ -72,9 +75,10 @@ class Register extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
+      curentUser: check.getCurrentUser(),
       fields: { username: "", email: "", password: "", role_id: 2 }
     }
-    this.onInputChange = this.onInputChange.bind(this)
+    // this.onInputChange = this.onInputChange.bind(this)
   }
 
   onInputChange(e) {
@@ -86,22 +90,34 @@ class Register extends React.Component {
     })
   }
 
-  onFormSubmit(e) {
+  onFormSubmit = async e => {
     e.preventDefault()
-    console.log(this.state.fields)
-    // jwt
-    //   .signUp(this.state.fields)
-    //   .then(res => {
-    //     this.setState({ fields: { username: "", email: "", password: "" } })
-    //     if (res) {
-    //       console.log("dsdsd")
-    //     }
-    //   })
-    //   .then(res => {})
-    //   .catch(err => {
-    //     console.error(err)
-    //     alert("Fail! Sign UP")
-    //   })
+    await this.props
+      .dispatch(register(this.state.fields))
+      .then(res => {
+        if (res.action.payload.data.status === 409) {
+          swal({
+            title: "Warning!",
+            text: `${res.action.payload.data.message}`,
+            icon: "warning",
+            timer: 2000,
+            button: false
+          })
+        } else {
+          swal({
+            title: "Done!",
+            text: "Register Success",
+            icon: "success",
+            timer: 2000,
+            button: false
+          })
+          this.props.history.push("/login")
+        }
+      })
+      .catch(err => {
+        console.error(err)
+        alert("Failed")
+      })
   }
 
   render() {
@@ -137,7 +153,7 @@ class Register extends React.Component {
                 label="Username"
                 name="username"
                 value={username}
-                onChange={this.onInputChange}
+                onChange={this.onInputChange.bind(this)}
                 autoComplete="username"
                 autoFocus
               />
@@ -149,7 +165,7 @@ class Register extends React.Component {
                 id="email"
                 label="Email"
                 name="email"
-                onChange={this.onInputChange}
+                onChange={this.onInputChange.bind(this)}
                 value={email}
                 autoComplete="email"
               />
@@ -160,7 +176,7 @@ class Register extends React.Component {
                 fullWidth
                 name="password"
                 label="Password"
-                onChange={this.onInputChange}
+                onChange={this.onInputChange.bind(this)}
                 value={password}
                 type="password"
                 id="password"
@@ -193,4 +209,10 @@ class Register extends React.Component {
   }
 }
 
-export default Register
+const mapStateToProps = state => {
+  return {
+    auth: state.auth
+  }
+}
+
+export default connect(mapStateToProps)(Register)

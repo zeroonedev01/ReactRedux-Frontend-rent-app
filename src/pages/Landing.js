@@ -5,6 +5,9 @@ import Carausel from "../components/carousel/Carousel"
 import Books from "../components/bookcard/BookList"
 import LinearProgress from "@material-ui/core/LinearProgress"
 import { connect } from "react-redux"
+import check from "../helpers/jwt"
+import { Redirect } from "react-router-dom"
+
 import { getBook, searchBook } from "../Publics/actions/book"
 
 const theme = createMuiTheme({
@@ -27,6 +30,7 @@ class Landing extends Component {
       sort: "",
       carousel: [],
       filter: "",
+      curentUser: check.getCurrentUser(),
       i: 0
     }
   }
@@ -77,6 +81,10 @@ class Landing extends Component {
     return cleanData
   }
   render() {
+    // if (!this.state.curentUser) {
+    //   this.props.history.push("/login")
+    // }
+    console.log("User", this.state.curentUser)
     console.log("Genre", this.state.filter)
     console.log("State", this.state)
     let filterCarousel = this.state.carousel.filter(
@@ -121,6 +129,7 @@ class Landing extends Component {
       <MuiThemeProvider theme={theme}>
         {
           <Header
+            curentUser={this.state.curentUser}
             searchBook={this.searchBook}
             handleChange={this.handleChange1}
             handleSort={this.handleSort}

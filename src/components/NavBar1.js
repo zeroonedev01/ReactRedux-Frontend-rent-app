@@ -29,7 +29,12 @@ import InputLabel from "@material-ui/core/InputLabel"
 import MenuItem from "@material-ui/core/MenuItem"
 import Select from "@material-ui/core/Select"
 import SortByAlpha from "@material-ui/icons/SortByAlpha"
+import Button from "@material-ui/core/Button"
 import { Link } from "react-router-dom"
+import InputIcon from "@material-ui/icons/Input"
+import HowToRegIcon from "@material-ui/icons/HowToReg"
+import jwt from "../helpers/jwt"
+import swal from "sweetalert"
 
 // import Menu from "@material-ui/core/Menu"
 // import MenuItem from "@material-ui/core/MenuItem"
@@ -40,6 +45,7 @@ import { Link } from "react-router-dom"
 // import Select from "@material-ui/core/Select"
 // import SortByAlpha from "@material-ui/icons/SortByAlpha"
 import { getGenre } from "../Publics/actions/genre"
+import Box from "@material-ui/core/Box"
 import { connect } from "react-redux"
 import AddDialog from "./dialogs/Add"
 const drawerWidth = 240
@@ -88,7 +94,7 @@ const styles = theme => ({
     width: drawerWidth
   },
   garox: {
-    backgroundImage: `url(${"https://cdn.dribbble.com/users/588874/screenshots/2341875/dribbble.png"})`
+    backgroundImage: `url(${"https://www.sammobile.com/wp-content/uploads/2017/05/Connections-675x540.jpg"})`
   },
   drawerHeader: {
     display: "flex",
@@ -115,8 +121,8 @@ const styles = theme => ({
   },
   bigAvatar: {
     margin: 10,
-    width: 120,
-    height: 120
+    width: 100,
+    height: 100
   },
   search: {
     position: "relative",
@@ -229,6 +235,38 @@ class PersistentDrawer extends React.Component {
       </MenuItem>
     ))
   }
+  onLogout = () => {
+    swal({
+      title: "confirm",
+      text: "Are you want to log out?",
+      icon: "warning",
+      dangerMode: true
+    })
+      .then(willDelete => {
+        if (willDelete) {
+          jwt.logOut()
+          swal({
+            title: "Log Out!",
+            text: `Log Out Success`,
+            icon: "success",
+            timer: 2000,
+            button: false
+          })
+          window.location.href = "/"
+        }
+      })
+      .catch(err => console.log("error =", err))
+    // e.preventDefault()
+    // await jwt.logOut()
+    // await swal({
+    //   title: "Log Out!",
+    //   text: `Log Out Success`,
+    //   icon: "success",
+    //   timer: 2000,
+    //   button: false
+    // })
+    // window.location.href = "/"
+  }
 
   render() {
     const { getGen } = this.state
@@ -255,32 +293,70 @@ class PersistentDrawer extends React.Component {
               )}
             </IconButton>
           </div>
-          <Grid container justify="center" alignItems="center">
-            <Avatar
-              alt="avatar"
-              src="https://cdn3.iconfinder.com/data/icons/avatars-15/64/_Ninja-2-512.png"
-              className={classes.bigAvatar}
-            />
-          </Grid>
-          <Typography gutterBottom variant="h5" component="h2" align="center">
-            Misekai
-          </Typography>
+          {this.props.curentUser ? (
+            <>
+              <Grid container justify="center" alignItems="center">
+                <Avatar
+                  alt="avatar"
+                  // src="https://s.barraques.cat/pngfile/s/163-1635738_zeref-images-chibi-zeref-wallpaper-and-background-photos.png"
+                  src="https://i.pravatar.cc/300"
+                  className={classes.bigAvatar}
+                />
+              </Grid>
+              <Typography align="center" color="primary" gutterBottom>
+                <Box fontWeight="fontWeightBold" m={1}>
+                  {this.props.curentUser.email}
+                </Box>
+                <Button
+                  size="small"
+                  align="center"
+                  variant="contained"
+                  color="secondary"
+                  onClick={this.onLogout}
+                >
+                  Log Out
+                </Button>
+              </Typography>
+            </>
+          ) : (
+            ""
+          )}
         </div>
         <Divider />
         <List>
-          <ListItem button component={Link} to="/explore">
-            <ListItemIcon>
-              <IExplore />
-            </ListItemIcon>
-            <ListItemText primary="Explore" />
-          </ListItem>
-          <ListItem button>
-            <ListItemIcon>
-              <IHistory />
-            </ListItemIcon>
-            <ListItemText primary="History" />
-          </ListItem>
-          <AddDialog />
+          {this.props.curentUser ? (
+            <>
+              <ListItem button component={Link} to="/explore">
+                <ListItemIcon>
+                  <IExplore />
+                </ListItemIcon>
+                <ListItemText primary="Explore" />
+              </ListItem>
+
+              <ListItem button component={Link} to="/history">
+                <ListItemIcon>
+                  <IHistory />
+                </ListItemIcon>
+                <ListItemText primary="History" />
+              </ListItem>
+              {this.props.curentUser.role === "admin" ? <AddDialog /> : ""}
+            </>
+          ) : (
+            <>
+              <ListItem button component={Link} to="/login">
+                <ListItemIcon>
+                  <InputIcon />
+                </ListItemIcon>
+                <ListItemText primary="Log In" />
+              </ListItem>
+              <ListItem button component={Link} to="/register">
+                <ListItemIcon>
+                  <HowToRegIcon />
+                </ListItemIcon>
+                <ListItemText primary="Register" />
+              </ListItem>
+            </>
+          )}
         </List>
       </Drawer>
     )
@@ -311,55 +387,64 @@ class PersistentDrawer extends React.Component {
               Rent Book
             </Typography>
             <div className={classes.grow} />
-            <div className={classes.search}>
-              <div className={classes.searchIcon}>
-                <SearchIcon />
+            {this.props.handleChange ? (
+              <div className={classes.search}>
+                <div className={classes.searchIcon}>
+                  <SearchIcon />
+                </div>
+                <InputBase
+                  placeholder="Search…"
+                  onChange={this.props.handleChange}
+                  onKeyPress={this.props.searchBook}
+                  classes={{
+                    root: classes.inputRoot,
+                    input: classes.inputInput
+                  }}
+                  inputProps={{ "aria-label": "search" }}
+                />
               </div>
-              <InputBase
-                placeholder="Search…"
-                onChange={this.props.handleChange}
-                onKeyPress={this.props.searchBook}
-                classes={{
-                  root: classes.inputRoot,
-                  input: classes.inputInput
-                }}
-                inputProps={{ "aria-label": "search" }}
-              />
-            </div>
+            ) : (
+              ""
+            )}
             <div className={classes.sectionDesktop}>
-              <form className={classes.root} autoComplete="off">
-                <FormControl className={classes.formControl}>
-                  <InputLabel htmlFor="genre">genre</InputLabel>
-                  <Select
-                    value={this.props.filter}
-                    name="genre"
-                    onChange={this.props.handleFilter}
-                  >
-                    <MenuItem value="">
-                      <em>All</em>
-                    </MenuItem>
-                    {getGen.map((genre1, index) => (
-                      <MenuItem value={genre1.name} key={index}>
-                        {genre1.name}
+              {this.props.handleFilter ? (
+                <form className={classes.root} autoComplete="off">
+                  <FormControl className={classes.formControl}>
+                    <InputLabel htmlFor="genre">genre</InputLabel>
+                    <Select
+                      value={this.props.filter}
+                      name="genre"
+                      onChange={this.props.handleFilter}
+                    >
+                      <MenuItem value="">
+                        <em>All</em>
                       </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </form>
-              <form className={classes.root} autoComplete="off">
-                <FormControl className={classes.formControl}>
-                  <InputLabel htmlFor="alltime">AllTime</InputLabel>
-                  <Select
-                    value={this.props.sort}
-                    onChange={this.props.handleSort}
-                  >
-                    {this.renderSelectOptions()}
-                  </Select>
-                </FormControl>
-              </form>
-              <IconButton>
-                <SortByAlpha />
-              </IconButton>
+                      {getGen.map((genre1, index) => (
+                        <MenuItem value={genre1.name} key={index}>
+                          {genre1.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </form>
+              ) : (
+                ""
+              )}
+              {this.props.handleSort ? (
+                <form className={classes.root} autoComplete="off">
+                  <FormControl className={classes.formControl}>
+                    <InputLabel htmlFor="alltime">AllTime</InputLabel>
+                    <Select
+                      value={this.props.sort}
+                      onChange={this.props.handleSort}
+                    >
+                      {this.renderSelectOptions()}
+                    </Select>
+                  </FormControl>
+                </form>
+              ) : (
+                ""
+              )}
             </div>
           </Toolbar>
         </AppBar>

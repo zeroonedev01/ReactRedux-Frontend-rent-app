@@ -1,11 +1,11 @@
 import React, { Component } from "react"
 import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles"
 import Header from "../components/NavBar1"
-import Carausel from "../components/carousel/Carousel"
 import Books from "../components/bookcard/BookList"
 import LinearProgress from "@material-ui/core/LinearProgress"
 import { connect } from "react-redux"
 import { getBook, searchBook } from "../Publics/actions/book"
+import check from "../helpers/jwt"
 
 const theme = createMuiTheme({
   palette: {
@@ -17,11 +17,12 @@ const theme = createMuiTheme({
     }
   }
 })
-class Landing extends Component {
+class Explore extends Component {
   constructor(props) {
     super(props)
     this.handlePage = this.handlePage.bind(this)
     this.state = {
+      curentUser: check.getCurrentUser(),
       books: [],
       searchField: "",
       sort: "",
@@ -72,7 +73,9 @@ class Landing extends Component {
     return cleanData
   }
   render() {
-    console.log("State", this.state)
+    if (!this.state.curentUser) {
+      this.props.history.push("/login")
+    }
     const filteredBooks = this.state.books.sort((a, b) => {
       if (this.state.sort === "Newest") {
         console.log("in newest")
@@ -87,6 +90,7 @@ class Landing extends Component {
       <MuiThemeProvider theme={theme}>
         {
           <Header
+            curentUser={this.state.curentUser}
             searchBook={this.searchBook}
             handleChange={this.handleChange1}
             handleSort={this.handleSort}
@@ -117,4 +121,4 @@ const mapStateToProps = state => {
   }
 }
 
-export default connect(mapStateToProps)(Landing)
+export default connect(mapStateToProps)(Explore)

@@ -14,9 +14,20 @@ import Chip from "@material-ui/core/Chip"
 import { Link } from "react-router-dom"
 import Edit from "../components/dialogs/Edit"
 import swal from "sweetalert"
+import {
+  getBorrowStatus,
+  borrowBook,
+  returnBook
+} from "../Publics/actions/borrow"
+
 import { getBookById, deleteBook } from "../Publics/actions/book"
 import { connect } from "react-redux"
+import check from "../helpers/jwt"
+
 const styles = {
+  root: {
+    padding: "24px 16px"
+  },
   mainFeaturedPost: {
     position: "relative",
     backgroundColor: "#424242",
@@ -87,16 +98,126 @@ const styles = {
     backgroundColor: "white"
   }
 }
-
 class Detail extends Component {
   constructor(props) {
     super(props)
+
     this.state = {
-      books: []
+      curentUser: check.getCurrentUser(),
+      books: [],
+      data: []
     }
   }
-
+  handleRent = async () => {
+    const token = JSON.parse(check.getToken())
+    const id_book = this.props.match.params.idBook
+    // console.log("Tdata", this.state.data)
+    const idtrx = this.state.data.filter(s => s.datereturnuser === null)
+    // console.log("Trx", idtrx)
+    await this.props
+      .dispatch(returnBook(idtrx[0].id, token))
+      .then(res => {
+        console.log("add Book", res.action.payload.data.status)
+        if (res.action.payload.data.status === 410) {
+          swal({
+            title: "Warning!",
+            text: `${res.action.payload.data.message}`,
+            icon: "warning",
+            timer: 2000,
+            button: false
+          })
+        } else if (res.action.payload.data.status === 500) {
+          swal({
+            title: "Warning!",
+            text: `Fail to Authentication. Error`,
+            icon: "warning",
+            timer: 2000,
+            button: false
+          })
+        } else if (res.action.payload.data.status === 404) {
+          swal({
+            title: "Warning!",
+            text: `${res.action.payload.data.message}`,
+            icon: "warning",
+            timer: 2000,
+            button: false
+          })
+        } else {
+          swal({
+            title: "Done!",
+            text: "Book is Successfully Returned",
+            icon: "success",
+            timer: 2000,
+            button: false
+          }).then(function() {
+            window.location.reload()
+          })
+        }
+      })
+      .catch(err => {
+        swal({
+          title: "Failed!",
+          text: "Add Book Failed!" + err,
+          icon: "warning",
+          buttons: "oke"
+        })
+      })
+  }
+  handleBorrow = async () => {
+    let date = new Date()
+    date.setDate(date.getDate() + 7)
+    const token = JSON.parse(check.getToken())
+    const data1 = {
+      id_book: this.props.match.params.idBook,
+      daterent: new Date(),
+      datereturn: date,
+      datereturnuser: null,
+      user_id: this.state.curentUser.id
+    }
+    console.log(data1)
+    await this.props
+      .dispatch(borrowBook(data1, token))
+      .then(res => {
+        console.log("add Book", res.action.payload.data.status)
+        if (res.action.payload.data.status === 410) {
+          swal({
+            title: "Warning!",
+            text: `${res.action.payload.data.message}`,
+            icon: "warning",
+            timer: 2000,
+            button: false
+          })
+        } else if (res.action.payload.data.status === 500) {
+          swal({
+            title: "Warning!",
+            text: `Fail to Authentication. Error`,
+            icon: "warning",
+            timer: 2000,
+            button: false
+          })
+        } else {
+          swal({
+            title: "Done!",
+            text: "Book is Successfully Booked",
+            icon: "success",
+            timer: 2000,
+            button: false
+          }).then(function() {
+            window.location.reload()
+          })
+        }
+      })
+      .catch(err => {
+        swal({
+          title: "Failed!",
+          text: "Add Book Failed!" + err,
+          icon: "warning",
+          buttons: "oke"
+        })
+      })
+  }
   handleDelete = () => {
+    const token = JSON.parse(check.getToken())
     const bookid = this.props.match.params.idBook
     swal({
       title: "Are you sure?",
@@ -106,7 +227,7 @@ class Detail extends Component {
     })
       .then(willDelete => {
         if (willDelete) {
-          this.props.dispatch(deleteBook(bookid, "")).then(res => {
+          this.props.dispatch(deleteBook(bookid, token)).then(res => {
             this.props.history.push("/")
             swal({
               title: "Done!",
@@ -122,11 +243,19 @@ class Detail extends Component {
   }
   componentDidMount = async () => {
     const bookid = this.props.match.params.idBook
+    const token = JSON.parse(check.getToken())
     await this.props.dispatch(getBookById(bookid))
+    await this.props.dispatch(
+      getBorrowStatus(
+        this.props.book.bookList[0].statusid,
+        this.props.book.bookList[0].id,
+        token
+      )
+    )
     const cleanData = this.cleanData(this.props.book)
-    console.log("Detail CleanData", cleanData)
     this.setState({ books: cleanData })
-    console.log("getBooksDetail =", this.state.books)
+    this.setState({ data: this.props.borrow.borrowStat })
+    // console.log("data sekarang", this.state.data[0].username)
   }
   cleanData = res => {
     const cleanData = res.bookList.map(book => {
@@ -142,6 +271,7 @@ class Detail extends Component {
     return cleanData
   }
   render() {
+    console.log("user sekarang", this.state.curentUser)
     const { books } = this.state
     return (
       <React.Fragment>
@@ -173,12 +303,17 @@ class Detail extends Component {
               <Grid container>
                 <Grid item md={12}>
                   <div style={styles.mainFeaturedPostContent}>
-                    <div style={styles.buttonRight}>
-                      <Edit bookInfo={books[0]} />
-                      <Button color="inherit" onClick={this.handleDelete}>
-                        Delete
-                      </Button>
-                    </div>
+                    {this.state.curentUser &&
+                    this.state.curentUser.role === "admin" ? (
+                      <div style={styles.buttonRight}>
+                        <Edit bookInfo={books[0]} />
+                        <Button color="inherit" onClick={this.handleDelete}>
+                          Delete
+                        </Button>
+                      </div>
+                    ) : (
+                      ""
+                    )}
 
                     <Link to="/" style={{ textDecoration: "none" }}>
                       {" "}
@@ -215,9 +350,65 @@ class Detail extends Component {
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={4}>
-                  <Button size="large" style={styles.setButton}>
-                    Borrow
-                  </Button>
+                  {this.state.curentUser ? (
+                    this.state.curentUser.role === "admin" ? (
+                      card.available === "true" ? (
+                        <Typography variant="h6" component="h3">
+                          Book Available
+                        </Typography>
+                      ) : (
+                        <Typography variant="h6" component="h3">
+                          Borrowed by {this.props.borrow.borrowStat[0].username}
+                          <br></br>
+                          Estimated Book Returned{" "}
+                          {
+                            new Date(this.props.borrow.borrowStat[0].datereturn)
+                              .toISOString()
+                              .split("T")[0]
+                          }
+                        </Typography>
+                      )
+                    ) : card.available === "true" ? (
+                      <Button
+                        size="large"
+                        style={styles.setButton}
+                        onClick={this.handleBorrow}
+                      >
+                        Borrow
+                      </Button>
+                    ) : this.props.borrow.borrowStat[0].userid ===
+                      this.state.curentUser.id ? (
+                      <Button
+                        size="large"
+                        style={styles.setButton}
+                        onClick={this.handleRent}
+                      >
+                        Return
+                      </Button>
+                    ) : (
+                      <Typography color="error">
+                        Borrowed by {this.props.borrow.borrowStat[0].username}
+                        <br></br>
+                        Estimated Book Returned{" "}
+                        {
+                          new Date(this.props.borrow.borrowStat[0].datereturn)
+                            .toISOString()
+                            .split("T")[0]
+                        }
+                      </Typography>
+                    )
+                  ) : (
+                    <>
+                      <Link to="/login" style={{ textDecoration: "none" }}>
+                        <Button size="large" style={styles.setButton}>
+                          Sign In
+                        </Button>
+                      </Link>
+                      <Typography color="error">
+                        Please sign in to complete the borrowing action
+                      </Typography>
+                    </>
+                  )}
                 </Grid>
               </Grid>
             </Container>
@@ -230,8 +421,8 @@ class Detail extends Component {
 
 const mapStateToProps = state => {
   return {
-    book: state.book
+    book: state.book,
+    borrow: state.borrow
   }
 }
-
 export default connect(mapStateToProps)(Detail)

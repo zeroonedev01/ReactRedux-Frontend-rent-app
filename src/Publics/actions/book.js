@@ -30,10 +30,10 @@ export const addBook = (data, token) => {
     payload: axios({
       method: "post",
       url: `http://localhost:3020/rentapp/books`,
-      data: data
-      // headers: {
-      //   Authorization: `Bearer ${token}`
-      // }
+      data: data,
+      headers: {
+        "x-access-token": `${token}`
+      }
     })
       .then()
       .catch(err => {
@@ -49,7 +49,7 @@ export const editBook = (id, data, token) => {
       url: `http://localhost:3020/rentapp/books/${id}`,
       data: data,
       headers: {
-        "x-access-token": ``
+        "x-access-token": `${token}`
       }
     })
       .then()
@@ -65,7 +65,7 @@ export const deleteBook = (id, token) => {
       method: "delete",
       url: `http://localhost:3020/rentapp/books/${id}`,
       headers: {
-        "x-access-token": ``
+        "x-access-token": `${token}`
       }
     })
       .then()

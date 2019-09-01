@@ -28,7 +28,7 @@ import FormControl from "@material-ui/core/FormControl"
 import InputLabel from "@material-ui/core/InputLabel"
 import MenuItem from "@material-ui/core/MenuItem"
 import Select from "@material-ui/core/Select"
-import SortByAlpha from "@material-ui/icons/SortByAlpha"
+// import SortByAlpha from "@material-ui/icons/SortByAlpha"
 import Button from "@material-ui/core/Button"
 import { Link } from "react-router-dom"
 import InputIcon from "@material-ui/icons/Input"
@@ -413,7 +413,7 @@ class PersistentDrawer extends React.Component {
                     <InputLabel htmlFor="genre">genre</InputLabel>
                     <Select
                       value={this.props.filter}
-                      name="genre"
+                      name="Genre"
                       onChange={this.props.handleFilter}
                     >
                       <MenuItem value="">

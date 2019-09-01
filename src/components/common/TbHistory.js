@@ -1,6 +1,5 @@
 import React from "react"
 import MUIDataTable from "mui-datatables"
-import { Button } from "@material-ui/core"
 
 class History extends React.Component {
   constructor(props) {

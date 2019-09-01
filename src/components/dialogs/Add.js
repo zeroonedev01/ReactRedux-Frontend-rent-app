@@ -16,7 +16,7 @@ import InputLabel from "@material-ui/core/InputLabel"
 import FormControl from "@material-ui/core/FormControl"
 import swal from "sweetalert"
 import { getGenre } from "../../Publics/actions/genre"
-import { addBook, getBook } from "../../Publics/actions/book"
+import { addBook } from "../../Publics/actions/book"
 import { connect } from "react-redux"
 import check from "../../helpers/jwt"
 class Add extends Component {

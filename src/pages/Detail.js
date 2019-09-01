@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import { makeStyles } from "@material-ui/core/styles"
+// import { makeStyles } from "@material-ui/core/styles"
 import CssBaseline from "@material-ui/core/CssBaseline"
 import Paper from "@material-ui/core/Paper"
 import Fab from "@material-ui/core/Fab"
@@ -110,7 +110,7 @@ class Detail extends Component {
   }
   handleRent = async () => {
     const token = JSON.parse(check.getToken())
-    const id_book = this.props.match.params.idBook
+    // const id_book = this.props.match.params.idBook
     // console.log("Tdata", this.state.data)
     const idtrx = this.state.data.filter(s => s.datereturnuser === null)
     // console.log("Trx", idtrx)
@@ -245,13 +245,17 @@ class Detail extends Component {
     const bookid = this.props.match.params.idBook
     const token = JSON.parse(check.getToken())
     await this.props.dispatch(getBookById(bookid))
-    await this.props.dispatch(
-      getBorrowStatus(
-        this.props.book.bookList[0].statusid,
-        this.props.book.bookList[0].id,
-        token
+    if (this.props.book.bookList[0]) {
+      await this.props.dispatch(
+        getBorrowStatus(
+          this.props.book.bookList[0].statusid,
+          this.props.book.bookList[0].id,
+          token
+        )
       )
-    )
+    } else {
+      this.props.history.push("/404")
+    }
     const cleanData = this.cleanData(this.props.book)
     this.setState({ books: cleanData })
     this.setState({ data: this.props.borrow.borrowStat })

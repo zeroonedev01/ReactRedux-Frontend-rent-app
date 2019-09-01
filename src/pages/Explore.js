@@ -26,6 +26,7 @@ class Explore extends Component {
       books: [],
       searchField: "",
       sort: "",
+      filter: "",
       carousel: [],
       i: 0
     }
@@ -59,6 +60,10 @@ class Explore extends Component {
       i: e
     })
   }
+  handleFilter = e => {
+    console.log(e.target.value)
+    this.setState({ filter: e.target.value })
+  }
   cleanData = res => {
     const cleanData = res.bookList.map(book => {
       book.DateReleased = new Date(book.DateReleased)
@@ -76,16 +81,23 @@ class Explore extends Component {
     if (!this.state.curentUser) {
       this.props.history.push("/login")
     }
-    const filteredBooks = this.state.books.sort((a, b) => {
-      if (this.state.sort === "Newest") {
-        console.log("in newest")
-        return new Date(b.DateReleased) - new Date(a.DateReleased)
-      } else if (this.state.sort === "Oldest") {
-        return new Date(a.DateReleased) - new Date(b.DateReleased)
-      }
-      // console.log("sdssdsd", this.state.books)
-      return true
-    })
+    let filteredBooks = this.state.books
+      .filter(bookFil => {
+        if (this.state.filter === "") {
+          return bookFil
+        }
+        return bookFil.genre === this.state.filter
+      })
+      .sort((a, b) => {
+        if (this.state.sort === "Newest") {
+          console.log("in newest")
+          return new Date(b.DateReleased) - new Date(a.DateReleased)
+        } else if (this.state.sort === "Oldest") {
+          return new Date(a.DateReleased) - new Date(b.DateReleased)
+        }
+
+        return true
+      })
     return (
       <MuiThemeProvider theme={theme}>
         {
@@ -95,20 +107,18 @@ class Explore extends Component {
             handleChange={this.handleChange1}
             handleSort={this.handleSort}
             sort={this.state.sort}
+            handleFilter={this.handleFilter}
+            filter={this.state.filter}
           />
         }
         {this.state.books ? (
-          <>
-            <Books
-              books={filteredBooks}
-              i={this.state.i}
-              handlePage={this.handlePage.bind(this)}
-            />
-          </>
+          <Books
+            books={filteredBooks}
+            i={this.state.i}
+            handlePage={this.handlePage.bind(this)}
+          />
         ) : (
-          <>
-            <LinearProgress color="secondary" />
-          </>
+          <LinearProgress color="secondary" />
         )}
       </MuiThemeProvider>
     )

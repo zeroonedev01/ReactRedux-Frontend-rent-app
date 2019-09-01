@@ -6,7 +6,6 @@ import Slider from "react-slick"
 import "slick-carousel/slick/slick.css"
 import "slick-carousel/slick/slick-theme.css"
 import Axios from "axios"
-import Typography from "@material-ui/core/Typography"
 
 const API_URL = "http://localhost:3020/rentapp"
 // const Carousel = props => {

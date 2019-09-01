@@ -1,13 +1,15 @@
 import React from "react"
 import MUIDataTable from "mui-datatables"
-import { Button } from "@material-ui/core"
+import { Typography } from "@material-ui/core"
 
 class History extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       data: []
+      // fine: 0
     }
+    this.fine1 = 0
   }
   componentDidMount = () => {
     this.setState({ data: this.props.data })
@@ -22,6 +24,8 @@ class History extends React.Component {
     )
     const fine = diffDays * 2000
     if (date2 > e) {
+      // console.log((this.fine1 += fine))
+      this.fine1 += fine
       return fine
     } else {
       return 0
@@ -29,17 +33,27 @@ class History extends React.Component {
   }
   render() {
     console.log("sayank", this.state.data)
+    // console.log(this.fine1)
+
     const columns = [
       "Transaction ID",
       "Title",
       "Borrow Date",
       "Expired Date",
       "Fine to Day",
-      "View"
+      "Date Returned"
     ]
+    let date = new Date()
+    date.setDate(date.getDate() - 1)
+    console.log(date)
     const data = this.props.data
-      .filter(item => item.status === 2 && item.datereturnuser === null)
+      .filter(
+        item =>
+          new Date(item.datereturnuser).toISOString().split("T")[0] ===
+          date.toISOString().split("T")[0]
+      )
       .map((item, index) => {
+        console.log("sdsds")
         return [
           item.id,
           item.title,
@@ -47,32 +61,31 @@ class History extends React.Component {
           (item.datereturn = new Date(item.datereturn)
             .toISOString()
             .split("T")[0]),
-          this.fineMoney(new Date(item.datereturn)),
-          <Button
-            onClick={() => this.handleClick(item.bookid)}
-            size="small"
-            variant="contained"
-            color="secondary"
-          >
-            {" "}
-            View
-          </Button>
+          (item.datereturnuser = new Date(item.datereturnuser)
+            .toISOString()
+            .split("T")[0]),
+          this.fineMoney(new Date(item.datereturn))
         ]
       })
     const options = {
       filter: true,
       filterType: "dropdown",
       responsive: "stacked",
-      selectableRows: "none"
+      selectableRows: "none",
+      customFooter: () => {
+        return <Typography align="right">Total Fine {this.fine1}</Typography>
+      }
     }
-
+    console.log("aaat", this.fine1)
     return (
-      <MUIDataTable
-        title={"On Borrowing"}
-        data={data}
-        columns={columns}
-        options={options}
-      />
+      <>
+        <MUIDataTable
+          title={"On Borrowing"}
+          data={data}
+          columns={columns}
+          options={options}
+        />
+      </>
     )
   }
 }

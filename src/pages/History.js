@@ -3,9 +3,10 @@ import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles"
 import Header from "../components/NavBar1"
 import TableHis from "../components/common/TbHistory"
 import TableRent from "../components/common/TbOnRent"
+import TabletoDay from "../components/common/TbRetToday"
 
 import Container from "@material-ui/core/Container"
-import Grid from "@material-ui/core/Grid"
+// import Grid from "@material-ui/core/Grid"
 
 import { connect } from "react-redux"
 import { getBorrowId } from "../Publics/actions/borrow"
@@ -55,6 +56,8 @@ class History extends Component {
         {<Header curentUser={this.state.curentUser} />}
         <Container maxWidth="lg">
           {<TableRent data={this.state.data}></TableRent>}
+          <br></br>
+          {<TabletoDay data={this.state.data}></TabletoDay>}
           <br></br>
           {<TableHis data={this.state.data}></TableHis>}
         </Container>

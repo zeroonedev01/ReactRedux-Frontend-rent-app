@@ -6,7 +6,7 @@ import Books from "../components/bookcard/BookList"
 import LinearProgress from "@material-ui/core/LinearProgress"
 import { connect } from "react-redux"
 import check from "../helpers/jwt"
-import { Redirect } from "react-router-dom"
+// import { Redirect } from "react-router-dom"
 
 import { getBook, searchBook } from "../Publics/actions/book"
 

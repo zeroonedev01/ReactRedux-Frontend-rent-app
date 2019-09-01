@@ -170,7 +170,7 @@ class Detail extends Component {
     const data1 = {
       id_book: this.props.match.params.idBook,
       daterent: new Date(),
-      datereturn: new Date(date),
+      datereturn: date.split("T")[0]),
       datereturnuser: null,
       user_id: this.state.curentUser.id
     }

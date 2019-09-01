@@ -157,7 +157,9 @@ class Detail extends Component {
       .catch(err => {
         swal({
           title: "Failed!",
-          text: "Add Book Failed!" + err,
+          text: "Add Book Failed!" 
+          
+          err,
           icon: "warning",
           buttons: "oke"
         })
@@ -170,7 +172,7 @@ class Detail extends Component {
     const data1 = {
       id_book: this.props.match.params.idBook,
       daterent: new Date(),
-      datereturn: date.split("T")[0]),
+      datereturn: date.split("T")[0],
       datereturnuser: null,
       user_id: this.state.curentUser.id
     }

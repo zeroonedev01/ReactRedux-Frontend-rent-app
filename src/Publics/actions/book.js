@@ -4,24 +4,29 @@ export const getBook = () => {
   return {
     type: "GET_BOOK",
     payload: axios.get(
-      `http://localhost:3020/rentapp/books?sort=datereleased:desc`
+      `http://afternoon-coast-91761.herokuapp.com/rentapp/books?sort=datereleased:desc`
     )
   }
 }
 export const searchBook = e => {
   return {
     type: "SEARCH_BOOK",
-    payload: axios.get(`http://localhost:3020/rentapp/books`, {
-      params: {
-        search: e
+    payload: axios.get(
+      `http://afternoon-coast-91761.herokuapp.com/rentapp/books`,
+      {
+        params: {
+          search: e
+        }
       }
-    })
+    )
   }
 }
 export const getBookById = id => {
   return {
     type: "GET_BOOK_ID",
-    payload: axios.get(`http://localhost:3020/rentapp/books/${id}`)
+    payload: axios.get(
+      `http://afternoon-coast-91761.herokuapp.com/rentapp/books/${id}`
+    )
   }
 }
 export const addBook = (data, token) => {
@@ -29,7 +34,7 @@ export const addBook = (data, token) => {
     type: "ADD_BOOK",
     payload: axios({
       method: "post",
-      url: `http://localhost:3020/rentapp/books`,
+      url: `http://afternoon-coast-91761.herokuapp.com/rentapp/books`,
       data: data,
       headers: {
         "x-access-token": `${token}`
@@ -46,7 +51,7 @@ export const editBook = (id, data, token) => {
     type: "EDIT_BOOK",
     payload: axios({
       method: "patch",
-      url: `http://localhost:3020/rentapp/books/${id}`,
+      url: `http://afternoon-coast-91761.herokuapp.com/rentapp/books/${id}`,
       data: data,
       headers: {
         "x-access-token": `${token}`
@@ -63,7 +68,7 @@ export const deleteBook = (id, token) => {
     type: "DELETE_BOOK",
     payload: axios({
       method: "delete",
-      url: `http://localhost:3020/rentapp/books/${id}`,
+      url: `http://afternoon-coast-91761.herokuapp.com/rentapp/books/${id}`,
       headers: {
         "x-access-token": `${token}`
       }

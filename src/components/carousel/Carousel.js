@@ -7,7 +7,7 @@ import "slick-carousel/slick/slick.css"
 import "slick-carousel/slick/slick-theme.css"
 import Axios from "axios"
 
-const API_URL = "http://localhost:3020/rentapp"
+const API_URL = "http://afternoon-coast-91761.herokuapp.com/rentapp/"
 // const Carousel = props => {
 //   return (
 //     <div>

@@ -5,7 +5,7 @@ export const login = data => {
     type: "LOGIN",
     payload: axios({
       method: "post",
-      url: `http://localhost:3020/rentapp/users/signin`,
+      url: `http://afternoon-coast-91761.herokuapp.com/rentapp/users/signin`,
       data: data
     })
       .then()
@@ -20,7 +20,7 @@ export const register = data => {
     type: "REGISTER",
     payload: axios({
       method: "post",
-      url: `http://localhost:3020/rentapp/users/signup`,
+      url: `http://afternoon-coast-91761.herokuapp.com/rentapp/users/signup`,
       data: data
     })
       .then()

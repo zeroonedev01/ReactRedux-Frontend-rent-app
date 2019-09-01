@@ -157,9 +157,7 @@ class Detail extends Component {
       .catch(err => {
         swal({
           title: "Failed!",
-          text: "Add Book Failed!" 
-          
-          err,
+          text: "Add Book Failed!" + err,
           icon: "warning",
           buttons: "oke"
         })

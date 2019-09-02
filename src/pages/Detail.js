@@ -166,11 +166,12 @@ class Detail extends Component {
   handleBorrow = async () => {
     let date = new Date()
     date.setDate(date.getDate() + 7)
+    let date2 = date.toISOString().split("T")[0]
     const token = JSON.parse(check.getToken())
     const data1 = {
       id_book: this.props.match.params.idBook,
       daterent: new Date(),
-      datereturn: new Date(date),
+      datereturn: date2,
       datereturnuser: null,
       user_id: this.state.curentUser.id
     }

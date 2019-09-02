@@ -40,8 +40,8 @@ class History extends React.Component {
       "Title",
       "Borrow Date",
       "Expired Date",
-      "Fine to Day",
-      "Date Returned"
+      "Date Returned",
+      "Fine to Day"
     ]
     let date = new Date()
     date.setDate(date.getDate() - 1)
@@ -80,7 +80,7 @@ class History extends React.Component {
     return (
       <>
         <MUIDataTable
-          title={"On Borrowing"}
+          title={"Transaction Today"}
           data={data}
           columns={columns}
           options={options}

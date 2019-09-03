@@ -31,15 +31,28 @@ class Add extends Component {
       genre: "",
       date: ""
     },
+    image: {},
     getGen: []
+  }
+  handleFile = e => {
+    const file = Array.from(e.target.files)
+    this.setState({ image: file[0] })
   }
   handleClickOpen = () => {
     this.setState({ open: !this.state.open })
   }
   handleSubmit = async () => {
+    let formData = new FormData()
+    formData.append("id", this.state.fields.id)
+    formData.append("title", this.state.fields.title)
+    formData.append("desc", this.state.fields.desc)
+    formData.append("genre", this.state.fields.genre)
+    formData.append("date", this.state.fields.date)
+    formData.append("available", this.state.fields.available)
+    formData.append("image", this.state.image)
     const token = JSON.parse(check.getToken())
     await this.props
-      .dispatch(addBook(this.state.fields, token))
+      .dispatch(addBook(formData, token))
       .then(res => {
         console.log("add Book", res.action.payload.data.status)
         if (res.action.payload.data.status === 409) {
@@ -116,7 +129,7 @@ class Add extends Component {
   render() {
     const {
       open,
-      fields: { id, title, desc, image, genre, date },
+      fields: { id, title, desc, genre, date },
       getGen
     } = this.state
 
@@ -162,21 +175,15 @@ class Add extends Component {
                 variant="outlined"
                 margin="normal"
                 fullWidth
-                id="image"
-                label="image"
-                name="image"
-                onChange={this.onInputChange.bind(this)}
-                value={image}
-              />
-              <TextField
-                variant="outlined"
-                margin="normal"
-                fullWidth
                 name="date"
+                type="date"
                 label="date"
                 onChange={this.onInputChange.bind(this)}
                 value={date}
                 id="date"
+                InputLabelProps={{
+                  shrink: true
+                }}
               />
               <FormControl
                 style={{
@@ -234,6 +241,19 @@ class Add extends Component {
                 onChange={this.onInputChange.bind(this)}
                 margin="normal"
               />
+              <input
+                accept="image/*"
+                style={{ display: "none" }}
+                id="contained-button-file"
+                multiple
+                type="file"
+                onChange={this.handleFile}
+              />
+              <label htmlFor="contained-button-file">
+                <Button variant="outlined" component="span" color="secondary">
+                  Upload Image
+                </Button>
+              </label>
             </form>
           </DialogContent>
           <DialogActions>

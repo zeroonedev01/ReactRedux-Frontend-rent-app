@@ -5,7 +5,7 @@ export const getBorrowId = (id, token) => {
     type: "GET_BORROW_IDBOOK",
     payload: axios({
       method: "get",
-      url: `https://afternoon-coast-91761.herokuapp.com/rentapp/borrows?userid=${id}`,
+      url: `http://localhost:3020/rentapp/borrows?userid=${id}`,
       headers: {
         "x-access-token": `${token}`
       }
@@ -21,7 +21,7 @@ export const getBorrowStatus = (status, id, token) => {
     type: "GET_BORROW_STATUS",
     payload: axios({
       method: "get",
-      url: `https://afternoon-coast-91761.herokuapp.com/rentapp/borrows?bookid='${id}'&status=${status}`,
+      url: `http://localhost:3020/rentapp/borrows?bookid='${id}'&status=${status}`,
       headers: {
         "x-access-token": `${token}`
       }
@@ -37,7 +37,7 @@ export const borrowBook = (data, token) => {
     type: "BORROW_BOOK",
     payload: axios({
       method: "post",
-      url: `https://afternoon-coast-91761.herokuapp.com/rentapp/borrows`,
+      url: `http://localhost:3020/rentapp/borrows`,
       data: data,
       headers: {
         "x-access-token": `${token}`
@@ -50,7 +50,7 @@ export const returnBook = (id, token) => {
     type: "RETURN_BOOK",
     payload: axios({
       method: "patch",
-      url: `https://afternoon-coast-91761.herokuapp.com/rentapp/borrows/${id}`,
+      url: `http://localhost:3020/rentapp/borrows/${id}`,
       headers: {
         "x-access-token": `${token}`
       }

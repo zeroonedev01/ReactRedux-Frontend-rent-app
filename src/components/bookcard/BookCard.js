@@ -10,7 +10,7 @@ import { Link } from "react-router-dom"
 import Axios from "axios"
 import "../style.css"
 const maxlength = 150
-const API_URL = "https://afternoon-coast-91761.herokuapp.com/rentapp/"
+const API_URL = "http://localhost:3020/rentapp/"
 class BookCard extends Component {
   constructor(props) {
     super(props)

@@ -30,11 +30,11 @@ class Edit extends Component {
         id: this.props.bookInfo.id,
         title: this.props.bookInfo.Title,
         desc: this.props.bookInfo.Description,
-        image: this.props.bookInfo.Image,
         available: this.props.bookInfo.statusid,
         genre: this.props.bookInfo.genreid,
         date: this.props.bookInfo.DateReleased
       },
+      image: {},
       getGen: []
     }
     this.onInputChange = this.onInputChange.bind(this)
@@ -45,36 +45,54 @@ class Edit extends Component {
   }
 
   handleEdit = async e => {
-    const token = JSON.parse(check.getToken())
-    await this.props
-      .dispatch(editBook(this.state.fields.id, this.state.fields, token))
-      .then(res => {
-        console.log(res)
-        this.setState({
-          open: false,
-          fields: {
-            id: "",
-            title: "",
-            desc: "",
-            image: "",
-            available: "",
-            genre: "",
-            date: ""
-          }
-        })
-        swal({
-          title: "Done!",
-          text: "Book Edited",
-          icon: "success",
-          timer: 2000,
-          button: false
-        }).then(function() {
-          window.location.reload()
-        })
-      })
-      .catch(err => {
-        console.log(err)
-      })
+    function isEmpty(obj) {
+      return Object.keys({ Object }).length === 0
+    }
+    let formData = new FormData()
+    console.log(isEmpty(this.state.image))
+    // if (isEmpty(this.state.image)) {
+    //   formData.append("image", this.state.image)
+    //   console.log("sdsds1 sekarang", this.state.image)
+    // } else {
+    //   console.log("sayank")
+    // }
+    formData.append("id", this.state.fields.id)
+    formData.append("title", this.state.fields.title)
+    formData.append("desc", this.state.fields.desc)
+    formData.append("genre", this.state.fields.genre)
+    formData.append("date", this.state.fields.date)
+    formData.append("available", this.state.fields.available)
+
+    // const token = JSON.parse(check.getToken())
+    // await this.props
+    //   .dispatch(editBook(this.state.fields.id, formData, token))
+    //   .then(res => {
+    //     console.log(res)
+    //     this.setState({
+    //       open: false,
+    //       fields: {
+    //         id: "",
+    //         title: "",
+    //         desc: "",
+    //         available: "",
+    //         genre: "",
+    //         date: ""
+    //       },
+    //       image: {}
+    //     })
+    //     swal({
+    //       title: "Done!",
+    //       text: "Book Edited",
+    //       icon: "success",
+    //       timer: 2000,
+    //       button: false
+    //     }).then(function() {
+    //       window.location.reload()
+    //     })
+    //   })
+    //   .catch(err => {
+    //     console.log(err)
+    //   })
   }
 
   onInputChange(e) {
@@ -86,6 +104,10 @@ class Edit extends Component {
       }
     })
   }
+  handleFile = e => {
+    const file = Array.from(e.target.files)
+    this.setState({ image: file[0] })
+  }
   componentDidMount = async () => {
     await this.props.dispatch(getGenre())
     this.setState({ getGen: this.props.genre.genre })
@@ -96,7 +118,7 @@ class Edit extends Component {
     console.log(this.state.fields.available)
     const {
       open,
-      fields: { title, desc, image, available, genre, date },
+      fields: { title, desc, available, genre, date },
       getGen
     } = this.state
     return (
@@ -137,21 +159,15 @@ class Edit extends Component {
                 variant="outlined"
                 margin="normal"
                 fullWidth
-                id="image"
-                label="image"
-                name="image"
-                onChange={this.onInputChange.bind(this)}
-                value={image}
-              />
-              <TextField
-                variant="outlined"
-                margin="normal"
-                fullWidth
                 name="date"
+                type="date"
                 label="date"
                 onChange={this.onInputChange.bind(this)}
                 value={date}
                 id="date"
+                InputLabelProps={{
+                  shrink: true
+                }}
               />
               <FormControl
                 style={{
@@ -209,6 +225,19 @@ class Edit extends Component {
                 onChange={this.onInputChange.bind(this)}
                 margin="normal"
               />
+              <input
+                accept="image/*"
+                style={{ display: "none" }}
+                id="contained-button-file"
+                multiple
+                type="file"
+                onChange={this.handleFile}
+              />
+              <label htmlFor="contained-button-file">
+                <Button variant="outlined" component="span" color="secondary">
+                  Upload Image
+                </Button>
+              </label>
             </form>
           </DialogContent>
           <DialogActions>

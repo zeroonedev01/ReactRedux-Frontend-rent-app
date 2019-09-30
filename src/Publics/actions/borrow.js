@@ -57,3 +57,35 @@ export const returnBook = (id, token) => {
     })
   }
 }
+export const searchTrx = (id, token) => {
+  return {
+    type: "GET_BORROW_REQUEST",
+    payload: axios({
+      method: "get",
+      url: `http://localhost:3020/rentapp/borrows/borrowall/${id}`,
+      headers: {
+        "x-access-token": `${token}`
+      }
+    })
+      .then()
+      .catch(err => {
+        console.log(err + "\ngagal donk")
+      })
+  }
+}
+export const confirmBorID = (id, token) => {
+  return {
+    type: "CONFIRM_BORROW_REQUEST",
+    payload: axios({
+      method: "patch",
+      url: `http://localhost:3020/rentapp/borrows/borrowid/${id}`,
+      headers: {
+        "x-access-token": `${token}`
+      }
+    })
+      .then()
+      .catch(err => {
+        console.log(err + "\ngagal donk")
+      })
+  }
+}

@@ -97,7 +97,7 @@ class Login extends Component {
     await this.props
       .dispatch(login(this.state.fields))
       .then(res => {
-        if (res.action.payload.data.status === 403) {
+        if (res.action.payload.data.status === 401) {
           swal({
             title: "Warning!",
             text: `${res.action.payload.data.message}`,
@@ -105,7 +105,7 @@ class Login extends Component {
             timer: 2000,
             button: false
           })
-        } else if (res.action.payload.data.status === 404) {
+        } else if (res.action.payload.data.status === 400) {
           swal({
             title: "Warning!",
             text: `${res.action.payload.data.message}`,
@@ -138,9 +138,14 @@ class Login extends Component {
           }
         }
       })
-      .catch(err => {
-        console.error(err)
-        alert("Failed")
+      .catch(() => {
+        swal({
+          title: "Warning!",
+          text: `${this.props.auth.errMassage}`,
+          icon: "warning",
+          timer: 2000,
+          button: false
+        })
       })
   }
   render() {

@@ -61,7 +61,7 @@ const BookList = props => {
             {props.books
               .slice(startItemOfPage, endItemOfPage)
               .map((book, i) => {
-                return <BookCard info={book} />
+                return <BookCard key={i} info={book} />
               })}
           </Grid>
           <Grid

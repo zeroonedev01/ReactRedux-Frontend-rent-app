@@ -2,7 +2,8 @@ const init = {
   userData: [],
   isLoading: false,
   isRejected: false,
-  isFulfilled: false
+  isFulfilled: false,
+  errMassage: null
 }
 
 const auth = (state = init, action) => {
@@ -19,7 +20,8 @@ const auth = (state = init, action) => {
       return {
         ...state,
         isLoading: false,
-        isRejected: true
+        isRejected: true,
+        errMassage: action.payload.response.data.message
       }
     case "LOGIN_FULFILLED":
       return {

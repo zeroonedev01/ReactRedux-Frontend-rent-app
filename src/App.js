@@ -10,6 +10,7 @@ import Landing from "./pages/Landing"
 import Detail from "./pages/Detail"
 import History from "./pages/History"
 import Logout from "./pages/Logout"
+import ManAdmin from "./pages/ManAdmin"
 import NotFoundPage from "./pages/Notfound"
 
 const App = () => (
@@ -22,7 +23,7 @@ const App = () => (
             <Route path="/login" component={Login} />
             <Route path="/explore" component={Explore} />
             <Route path="/history" component={History} />
-
+            <Route path="/manadmin" component={ManAdmin} />
             <Route path="/register" component={Register} />
             <Route path="/logout" component={Logout} />
             <Route exact path={"/book/:idBook"} component={Detail} />

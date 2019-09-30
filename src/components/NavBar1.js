@@ -339,7 +339,19 @@ class PersistentDrawer extends React.Component {
                 </ListItemIcon>
                 <ListItemText primary="History" />
               </ListItem>
-              {this.props.curentUser.role === "admin" ? <AddDialog /> : ""}
+              {this.props.curentUser.role === "admin" ? (
+                <>
+                  <ListItem button component={Link} to="/manadmin">
+                    <ListItemIcon>
+                      <IHistory />
+                    </ListItemIcon>
+                    <ListItemText primary="Management Borrow" />
+                  </ListItem>
+                  <AddDialog />
+                </>
+              ) : (
+                ""
+              )}
             </>
           ) : (
             <>

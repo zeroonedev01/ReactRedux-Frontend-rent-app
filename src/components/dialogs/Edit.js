@@ -34,7 +34,7 @@ class Edit extends Component {
         genre: this.props.bookInfo.genreid,
         date: this.props.bookInfo.DateReleased
       },
-      image: {},
+      image: "",
       getGen: []
     }
     this.onInputChange = this.onInputChange.bind(this)
@@ -45,54 +45,47 @@ class Edit extends Component {
   }
 
   handleEdit = async e => {
-    function isEmpty(obj) {
-      return Object.keys({ Object }).length === 0
-    }
     let formData = new FormData()
-    console.log(isEmpty(this.state.image))
-    // if (isEmpty(this.state.image)) {
-    //   formData.append("image", this.state.image)
-    //   console.log("sdsds1 sekarang", this.state.image)
-    // } else {
-    //   console.log("sayank")
-    // }
+    if (this.state.image) {
+      formData.append("image", this.state.image)
+      console.log("Mashook", this.state.image)
+    }
     formData.append("id", this.state.fields.id)
     formData.append("title", this.state.fields.title)
     formData.append("desc", this.state.fields.desc)
     formData.append("genre", this.state.fields.genre)
     formData.append("date", this.state.fields.date)
     formData.append("available", this.state.fields.available)
-
-    // const token = JSON.parse(check.getToken())
-    // await this.props
-    //   .dispatch(editBook(this.state.fields.id, formData, token))
-    //   .then(res => {
-    //     console.log(res)
-    //     this.setState({
-    //       open: false,
-    //       fields: {
-    //         id: "",
-    //         title: "",
-    //         desc: "",
-    //         available: "",
-    //         genre: "",
-    //         date: ""
-    //       },
-    //       image: {}
-    //     })
-    //     swal({
-    //       title: "Done!",
-    //       text: "Book Edited",
-    //       icon: "success",
-    //       timer: 2000,
-    //       button: false
-    //     }).then(function() {
-    //       window.location.reload()
-    //     })
-    //   })
-    //   .catch(err => {
-    //     console.log(err)
-    //   })
+    const token = JSON.parse(check.getToken())
+    await this.props
+      .dispatch(editBook(this.state.fields.id, formData, token))
+      .then(res => {
+        console.log(res)
+        this.setState({
+          open: false,
+          fields: {
+            id: "",
+            title: "",
+            desc: "",
+            available: "",
+            genre: "",
+            date: ""
+          },
+          image: {}
+        })
+        swal({
+          title: "Done!",
+          text: "Book Edited",
+          icon: "success",
+          timer: 2000,
+          button: false
+        }).then(function() {
+          window.location.reload()
+        })
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
 
   onInputChange(e) {

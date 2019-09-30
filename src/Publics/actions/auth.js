@@ -8,10 +8,6 @@ export const login = data => {
       url: `http://localhost:3020/rentapp/users/signin`,
       data: data
     })
-      .then()
-      .catch(err => {
-        console.log("gagal nk\n" + err)
-      })
   }
 }
 

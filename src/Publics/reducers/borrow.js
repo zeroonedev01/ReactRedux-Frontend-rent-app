@@ -2,6 +2,7 @@ const initialState = {
   borrowData: [],
   borrowById: [],
   borrowStat: [],
+  request: [],
 
   isLoading: false,
   isFulfilled: false,
@@ -9,6 +10,45 @@ const initialState = {
 }
 const borrow = (state = initialState, action) => {
   switch (action.type) {
+    case "GET_BORROW_REQUEST_PENDING":
+      return {
+        ...state,
+        isLoading: true,
+        isFulfilled: false,
+        isRejected: false
+      }
+    case "GET_BORROW_REQUEST_REJECTED":
+      return {
+        ...state,
+        isLoading: false,
+        isRejected: true
+      }
+    case "GET_BORROW_REQUEST_FULFILLED":
+      return {
+        ...state,
+        isLoading: false,
+        isFulfilled: true,
+        request: action.payload.data.values
+      }
+    case "CONFIRM_BORROW_REQUEST_PENDING":
+      return {
+        ...state,
+        isLoading: true,
+        isFulfilled: false,
+        isRejected: false
+      }
+    case "CONFIRM_BORROW_REQUEST_REJECTED":
+      return {
+        ...state,
+        isLoading: false,
+        isRejected: true
+      }
+    case "CONFIRM_BORROW_REQUEST_FULFILLED":
+      return {
+        ...state,
+        isLoading: false,
+        isFulfilled: true
+      }
     case "GET_BORROW_IDBOOK_PENDING":
       return {
         ...state,

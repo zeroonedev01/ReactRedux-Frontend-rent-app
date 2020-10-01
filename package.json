@@ -26,7 +26,8 @@
     "start": "set PORT=3006 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "eslint-check": "eslint --print-config path/to/main.js | eslint-config-prettier-check"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -43,5 +44,12 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://http://localhost:3006/rentapp"
+  "proxy": "http://http://localhost:3006/rentapp",
+  "devDependencies": {
+    "eslint": "^7.10.0",
+    "eslint-config-prettier": "^6.12.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-react": "^7.21.2",
+    "prettier": "^2.1.2"
+  }
 }

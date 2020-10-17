@@ -1,4 +1,4 @@
-import React, { Component } from "react"
+import React, { Component, createRef } from "react"
 import Button from "@material-ui/core/Button"
 import CssBaseline from "@material-ui/core/CssBaseline"
 import TextField from "@material-ui/core/TextField"
@@ -16,6 +16,7 @@ import jwt from "../helpers/jwt"
 import check from "../helpers/jwt"
 import swal from "sweetalert"
 import { connect } from "react-redux"
+import ReCAPTCHA from 'react-google-recaptcha'
 
 function Copyright() {
   return (
@@ -75,6 +76,7 @@ const styles = {
 class Login extends Component {
   constructor() {
     super()
+    this.reRef = createRef()
     this.state = {
       curentUser: check.getCurrentUser(),
       fields: {
@@ -94,8 +96,11 @@ class Login extends Component {
   }
   handleLogin = async e => {
     e.preventDefault()
+    const tokenCaptcha = await this.reRef.current.executeAsync()
+    this.reRef.current.reset()
+
     await this.props
-      .dispatch(login(this.state.fields))
+      .dispatch(login({...this.state.fields, tokenCaptcha}))
       .then(res => {
         if (res.action.payload.data.status === 403) {
           swal({
@@ -170,6 +175,11 @@ class Login extends Component {
             <Typography component="h1" variant="h6">
               Welcome Back, Please Login to your account
             </Typography>
+             <ReCAPTCHA 
+                ref={this.reRef}
+                sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY}
+                size="invisible"
+              />
             <form style={styles.form} noValidate>
               <TextField
                 variant="outlined"
